@@ -8,7 +8,7 @@ description: "Task list template for feature implementation"
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+**Tests**: Automated test tasks are OPTIONAL and only included when explicitly requested in the feature specification. Validation tasks required by the constitution are NOT optional: include the relevant `tsci` and TypeScript verification steps for every story.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
@@ -20,10 +20,10 @@ description: "Task list template for feature implementation"
 
 ## Path Conventions
 
-- **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
-- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- Paths shown below assume single project - adjust based on plan.md structure
+- **Current repository**: `index.circuit.tsx` at root, with optional `src/` and `tests/`
+- **Expanded circuit package**: `src/circuits/`, `src/components/`, `src/lib/`
+- **Validation artifacts**: `specs/[###-feature]/`, optional snapshot outputs or generated review assets
+- Use the real paths from `plan.md`; do not invent backend/frontend structure unless the plan explicitly introduces it.
 
 <!-- 
   ============================================================================
@@ -48,9 +48,9 @@ description: "Task list template for feature implementation"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create project structure per implementation plan
-- [ ] T002 Initialize [language] project with [framework] dependencies
-- [ ] T003 [P] Configure linting and formatting tools
+- [ ] T001 Create or confirm the circuit file structure described in plan.md
+- [ ] T002 Confirm required dependencies, footprints, and tscircuit packages for the feature
+- [ ] T003 [P] Document required validation commands and artifact locations for the feature
 
 ---
 
@@ -62,12 +62,11 @@ description: "Task list template for feature implementation"
 
 Examples of foundational tasks (adjust based on your project):
 
-- [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement authentication/authorization framework
-- [ ] T006 [P] Setup API routing and middleware structure
-- [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure error handling and logging infrastructure
-- [ ] T009 Setup environment configuration management
+- [ ] T004 Establish shared nets, board constraints, and reusable subcircuits required across stories
+- [ ] T005 [P] Define strict TypeScript interfaces/types for new feature inputs and configuration
+- [ ] T006 [P] Prepare provisional component or footprint decisions and mark any unresolved fabrication blockers
+- [ ] T007 Configure any feature-specific validation helpers, scripts, or snapshot baselines
+- [ ] T008 Record manufacturability assumptions that all stories depend on
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -79,21 +78,23 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️
+### Validation for User Story 1 (MANDATORY) ⚠️
 
-> **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
+- [ ] T010 [P] [US1] Run `npm run typecheck` and capture any required TypeScript contract updates
+- [ ] T011 [P] [US1] Run `tsci check netlist` for the affected circuit paths
+- [ ] T012 [US1] Run `tsci build` and `tsci snapshot` for the user-visible circuit outcome
+- [ ] T013 [US1] Run `tsci check placement` if board outline, footprint, or placement changed
 
-- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
+### Tests for User Story 1 (OPTIONAL - only if tests requested)
+
+- [ ] T014 [P] [US1] Add automated test coverage requested by the spec
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T013 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T014 [US1] Implement [Service] in src/services/[service].py (depends on T012, T013)
-- [ ] T015 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T016 [US1] Add validation and error handling
-- [ ] T017 [US1] Add logging for user story 1 operations
+- [ ] T015 [P] [US1] Implement or update circuit elements in `index.circuit.tsx` or the planned `src/` path
+- [ ] T016 [P] [US1] Add or extract reusable subcircuit/helpers for repeated circuit logic
+- [ ] T017 [US1] Wire nets, placement props, and footprint selections for the story outcome
+- [ ] T018 [US1] Document provisional parts, fabrication blockers, or review notes introduced by this story
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -105,17 +106,19 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 2 (OPTIONAL - only if tests requested) ⚠️
+### Validation for User Story 2 (MANDATORY)
 
-- [ ] T018 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T019 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T019 [P] [US2] Run the required `tsci` and TypeScript validation commands for the changed circuit scope
+
+### Tests for User Story 2 (OPTIONAL - only if tests requested)
+
+- [ ] T020 [P] [US2] Add automated test coverage requested by the spec
 
 ### Implementation for User Story 2
 
-- [ ] T020 [P] [US2] Create [Entity] model in src/models/[entity].py
-- [ ] T021 [US2] Implement [Service] in src/services/[service].py
-- [ ] T022 [US2] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T023 [US2] Integrate with User Story 1 components (if needed)
+- [ ] T021 [P] [US2] Implement the circuit/subcircuit changes in the planned TSX files
+- [ ] T022 [US2] Integrate with shared nets, constraints, and subcircuits from earlier phases
+- [ ] T023 [US2] Update snapshots, notes, and fabrication-readiness status as needed
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -127,16 +130,19 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 3 (OPTIONAL - only if tests requested) ⚠️
+### Validation for User Story 3 (MANDATORY)
 
-- [ ] T024 [P] [US3] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T025 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T024 [P] [US3] Run the required `tsci` and TypeScript validation commands for the changed circuit scope
+
+### Tests for User Story 3 (OPTIONAL - only if tests requested)
+
+- [ ] T025 [P] [US3] Add automated test coverage requested by the spec
 
 ### Implementation for User Story 3
 
-- [ ] T026 [P] [US3] Create [Entity] model in src/models/[entity].py
-- [ ] T027 [US3] Implement [Service] in src/services/[service].py
-- [ ] T028 [US3] Implement [endpoint/feature] in src/[location]/[file].py
+- [ ] T026 [P] [US3] Implement the circuit/subcircuit changes in the planned TSX files
+- [ ] T027 [US3] Integrate with shared nets, constraints, and subcircuits from earlier phases
+- [ ] T028 [US3] Update snapshots, notes, and fabrication-readiness status as needed
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -152,10 +158,10 @@ Examples of foundational tasks (adjust based on your project):
 
 - [ ] TXXX [P] Documentation updates in docs/
 - [ ] TXXX Code cleanup and refactoring
-- [ ] TXXX Performance optimization across all stories
-- [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
-- [ ] TXXX Security hardening
-- [ ] TXXX Run quickstart.md validation
+- [ ] TXXX Review circuit purity, type contracts, and directory structure for unnecessary complexity
+- [ ] TXXX [P] Additional automated tests (if requested)
+- [ ] TXXX Validate fabrication readiness statement, export assumptions, and reviewer handoff notes
+- [ ] TXXX Re-run final `npm run typecheck`, `tsci check netlist`, `tsci build`, `tsci snapshot`, and `tsci check placement` if applicable
 
 ---
 
@@ -178,10 +184,10 @@ Examples of foundational tasks (adjust based on your project):
 
 ### Within Each User Story
 
-- Tests (if included) MUST be written and FAIL before implementation
-- Models before services
-- Services before endpoints
-- Core implementation before integration
+- Mandatory validation tasks MUST be present for each story
+- Optional automated tests, when requested, SHOULD be added before implementation
+- Shared types and constraints before dependent circuit implementation
+- Core circuit implementation before integration and snapshot refresh
 - Story complete before moving to next priority
 
 ### Parallel Opportunities
@@ -190,7 +196,8 @@ Examples of foundational tasks (adjust based on your project):
 - All Foundational tasks marked [P] can run in parallel (within Phase 2)
 - Once Foundational phase completes, all user stories can start in parallel (if team capacity allows)
 - All tests for a user story marked [P] can run in parallel
-- Models within a story marked [P] can run in parallel
+- Validation commands that touch different artifacts can run in parallel when safe
+- Independent circuit helpers within a story marked [P] can run in parallel
 - Different user stories can be worked on in parallel by different team members
 
 ---
@@ -198,13 +205,13 @@ Examples of foundational tasks (adjust based on your project):
 ## Parallel Example: User Story 1
 
 ```bash
-# Launch all tests for User Story 1 together (if tests requested):
-Task: "Contract test for [endpoint] in tests/contract/test_[name].py"
-Task: "Integration test for [user journey] in tests/integration/test_[name].py"
+# Launch independent validation work for User Story 1 together:
+Task: "Run npm run typecheck and capture any required TypeScript contract updates"
+Task: "Run tsci check netlist for the affected circuit paths"
 
-# Launch all models for User Story 1 together:
-Task: "Create [Entity1] model in src/models/[entity1].py"
-Task: "Create [Entity2] model in src/models/[entity2].py"
+# Launch independent circuit implementation tasks together:
+Task: "Implement or update circuit elements in index.circuit.tsx or the planned src/ path"
+Task: "Add or extract reusable subcircuit/helpers for repeated circuit logic"
 ```
 
 ---
@@ -245,7 +252,7 @@ With multiple developers:
 - [P] tasks = different files, no dependencies
 - [Story] label maps task to specific user story for traceability
 - Each user story should be independently completable and testable
-- Verify tests fail before implementing
+- Required validation tasks are part of the definition of done, even when automated tests are not requested
 - Commit after each task or logical group
 - Stop at any checkpoint to validate story independently
-- Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
+- Avoid: vague tasks, same file conflicts, undocumented provisional parts, and cross-story dependencies that break independence

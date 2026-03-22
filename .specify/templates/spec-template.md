@@ -7,6 +7,10 @@
 
 ## User Scenarios & Testing *(mandatory)*
 
+For this repository, every user story MUST identify the affected components,
+nets, footprints, or board constraints and state the command, snapshot, or other
+artifact that proves the story works independently.
+
 <!--
   IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.
   Each user story/journey must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,
@@ -67,13 +71,14 @@
 
 ### Edge Cases
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right edge cases.
--->
-
-- What happens when [boundary condition]?
-- How does system handle [error scenario]?
+- What happens when a required footprint, package, or component source is missing,
+  provisional, or ambiguous?
+- How does the design handle unconnected nets, accidental shorts, or inconsistent
+  net naming?
+- What happens when component placement, outline, or routing exceeds board-size or
+  manufacturing constraints?
+- How is fabrication readiness handled when placement is valid but routing or DRC
+  remains intentionally incomplete?
 
 ## Requirements *(mandatory)*
 
@@ -84,11 +89,11 @@
 
 ### Functional Requirements
 
-- **FR-001**: System MUST [specific capability, e.g., "allow users to create accounts"]
-- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]  
-- **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
-- **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
-- **FR-005**: System MUST [behavior, e.g., "log all security events"]
+- **FR-001**: System MUST express new circuit behavior in TypeScript/TSX using explicit components, values, nets, and footprints.
+- **FR-002**: System MUST document any new board or mechanical constraints needed for correct placement or fabrication.  
+- **FR-003**: Users MUST be able to verify the feature independently through defined `tsci` commands, snapshots, or equivalent review artifacts.
+- **FR-004**: System MUST preserve strict TypeScript guarantees for new props, helpers, and configuration objects.
+- **FR-005**: System MUST declare whether the resulting design is exploratory, review-ready, or fabrication-ready.
 
 *Example of marking unclear requirements:*
 
@@ -97,8 +102,8 @@
 
 ### Key Entities *(include if feature involves data)*
 
-- **[Entity 1]**: [What it represents, key attributes without implementation]
-- **[Entity 2]**: [What it represents, relationships to other entities]
+- **Circuit Element**: A component, subcircuit, or helper with defined electrical purpose, footprint, and connectivity.
+- **Net / Constraint**: A named electrical connection or physical/manufacturing rule that the feature depends on.
 
 ## Success Criteria *(mandatory)*
 
@@ -109,7 +114,7 @@
 
 ### Measurable Outcomes
 
-- **SC-001**: [Measurable metric, e.g., "Users can complete account creation in under 2 minutes"]
-- **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
-- **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
-- **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
+- **SC-001**: The primary user story can be validated with the declared `tsci` and TypeScript commands without unresolved netlist or build failures.
+- **SC-002**: Reviewers can identify affected components, nets, footprints, and board constraints directly from the spec and implementation.
+- **SC-003**: The feature can be demonstrated with a snapshot, rendered output, or equivalent artifact without requiring undocumented manual interpretation.
+- **SC-004**: Fabrication readiness status is unambiguous for the resulting design.

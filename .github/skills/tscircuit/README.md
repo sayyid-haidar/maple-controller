@@ -1,14 +1,17 @@
-# tscircuit Claude Skill
+# tscircuit Copilot Skill
 
-This folder is intended to be used as a Claude Code Skill.
+This folder is intended to be used as a GitHub Copilot agent skill.
 
 Install as:
 
 - Personal Skill (for you):
-  - `~/.claude/skills/tscircuit/`
+  - `~/.copilot/skills/tscircuit/`
 
 - Project Skill (shared in repo):
-  - `.claude/skills/tscircuit/`
+  - `.github/skills/tscircuit/`
+
+This repository standardizes on the Copilot-native `.github/skills/` location so
+there is only one shared skill source in version control.
 
 The canonical entrypoint is `SKILL.md`.
 

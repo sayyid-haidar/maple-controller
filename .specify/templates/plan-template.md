@@ -17,21 +17,25 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Language/Version**: TypeScript 5.x with TSX (`strict: true`)  
+**Primary Dependencies**: `tscircuit`, `typescript`, React JSX runtime types  
+**Storage**: N/A  
+**Testing**: `npm run typecheck`, `tsci check netlist`, `tsci check placement` (when applicable), `tsci build`, `tsci snapshot`  
+**Target Platform**: tscircuit CLI, web preview, and PCB fabrication outputs
+**Project Type**: tscircuit component/package  
+**Performance Goals**: Fast enough iteration for local circuit editing; minimize avoidable autorouting/rebuild churn  
+**Constraints**: Preserve circuit intent, keep render logic pure, and document manufacturability assumptions  
+**Scale/Scope**: Small-to-medium PCB/subcircuit features within a single package repository
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] Circuit intent is explicit: affected nets, components, footprints, polarity, and mechanical constraints are documented.
+- [ ] Render logic remains pure and composable: no hidden side effects in TSX, and repeated circuit patterns have an extraction plan.
+- [ ] Type contracts are explicit: `strict` assumptions hold, and any `any`, type assertions, or non-null assertions are justified.
+- [ ] Verification plan includes `npm run typecheck`, `tsci check netlist`, `tsci build`, and `tsci snapshot`; add `tsci check placement` for placement, outline, or footprint changes.
+- [ ] Manufacturability assumptions are captured: board outline, layer count, trace width/clearance expectations, critical footprints/connectors, and fabrication readiness status.
 
 ## Project Structure
 
@@ -56,49 +60,26 @@ specs/[###-feature]/
 -->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
+index.circuit.tsx          # Current package entrypoint for the primary circuit
+src/                       # Optional for extracted subcircuits/helpers as complexity grows
+├── circuits/
+├── components/
 └── lib/
 
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+tests/                     # Optional automated tests when explicitly requested
+artifacts/                 # Optional generated validation assets when checked in by policy
+specs/[###-feature]/
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: Keep the existing root entrypoint unless feature scope
+justifies extraction into `src/circuits/`, `src/components/`, or `src/lib/`.
+Document every new directory and why it reduces circuit complexity.
 
 ## Complexity Tracking
 
 > **Fill ONLY if Constitution Check has violations that must be justified**
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
+| --------- | ---------- | ----------------------------------- |
 | [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
 | [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
