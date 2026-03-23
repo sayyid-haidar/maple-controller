@@ -1,3 +1,5 @@
+import { KICAD_STEP_MODELS } from "../lib/cad-models"
+
 type PlacementProps = {
   pcbX?: number
   pcbY?: number
@@ -17,6 +19,7 @@ export const EthernetPoeFrontEnd = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <chip
       name="U_ETH_PHY"
       footprint="kicad:Package_DFN_QFN/QFN-24-1EP_4x4mm_P0.5mm_EP2.6x2.6mm"
+      cadModel={{ stepUrl: KICAD_STEP_MODELS.qfn24_1ep_4x4_p05_ep26 }}
       supplierPartNumbers={{ lcsc: ["C85278"] }}
       pcbX={48}
       pcbY={8}

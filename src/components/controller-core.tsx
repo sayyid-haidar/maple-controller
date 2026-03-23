@@ -1,3 +1,5 @@
+import { KICAD_STEP_MODELS } from "../lib/cad-models"
+
 type PlacementProps = {
   pcbX?: number
   pcbY?: number
@@ -135,6 +137,7 @@ export const ControllerCore = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <chip
       name="U_CTRL"
       footprint="kicad:Package_QFP/LQFP-100_14x14mm_P0.5mm"
+      cadModel={{ stepUrl: KICAD_STEP_MODELS.lqfp100_14x14_p05 }}
       supplierPartNumbers={{ lcsc: ["C8601"] }}
       pcbX={0}
       pcbY={0}

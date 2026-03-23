@@ -1,3 +1,5 @@
+import { KICAD_STEP_MODELS } from "../lib/cad-models"
+
 type PlacementProps = {
   pcbX?: number
   pcbY?: number
@@ -34,6 +36,7 @@ export const RetentionSupport = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <chip
       name="U_RTC"
       footprint="kicad:Package_SO/SOIC-8_3.9x4.9mm_P1.27mm"
+      cadModel={{ stepUrl: KICAD_STEP_MODELS.soic8_39x49_p127 }}
       supplierPartNumbers={{ lcsc: ["C255630"] }}
       pcbX={0}
       pcbY={0}
@@ -47,6 +50,7 @@ export const RetentionSupport = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <chip
       name="U_EVENT_FRAM"
       footprint="kicad:Package_SO/SOIC-8_3.9x4.9mm_P1.27mm"
+      cadModel={{ stepUrl: KICAD_STEP_MODELS.soic8_39x49_p127 }}
       supplierPartNumbers={{ lcsc: ["C92189"] }}
       pcbX={16}
       pcbY={0}

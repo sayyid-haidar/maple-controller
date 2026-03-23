@@ -1,3 +1,5 @@
+import { KICAD_STEP_MODELS } from "../lib/cad-models"
+
 type PlacementProps = {
   pcbX?: number
   pcbY?: number
@@ -21,6 +23,7 @@ export const ServiceConnectors = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <chip
       name="J_SERVICE"
       footprint="kicad:Connector_PinHeader_1.27mm/PinHeader_2x05_P1.27mm_Vertical"
+      cadModel={{ stepUrl: KICAD_STEP_MODELS.pinHeader2x05_p127 }}
       pcbX={0}
       pcbY={0}
       pinLabels={servicePinLabels}

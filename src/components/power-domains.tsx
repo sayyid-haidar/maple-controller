@@ -1,3 +1,5 @@
+import { KICAD_STEP_MODELS } from "../lib/cad-models"
+
 type PlacementProps = {
   pcbX?: number
   pcbY?: number
@@ -8,6 +10,7 @@ export const PowerDomains = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <chip
       name="U_POE_PD"
       footprint="kicad:Package_SO/SOIC-16_3.9x9.9mm_P1.27mm"
+      cadModel={{ stepUrl: KICAD_STEP_MODELS.soic16_39x99_p127 }}
       supplierPartNumbers={{ lcsc: ["C191946"] }}
       pcbX={0}
       pcbY={0}
@@ -17,6 +20,7 @@ export const PowerDomains = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <chip
       name="U_REG_5V"
       footprint="kicad:Package_SO/SOIC-8_3.9x4.9mm_P1.27mm"
+      cadModel={{ stepUrl: KICAD_STEP_MODELS.soic8_39x49_p127 }}
       supplierPartNumbers={{ lcsc: ["C146598"] }}
       pcbX={16}
       pcbY={0}
