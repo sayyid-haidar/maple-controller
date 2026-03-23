@@ -67,7 +67,7 @@ const stm32PinLabels = {
   pin44: "WIEGAND_D0",   // PE13 – GPIO input: Wiegand data 0
   pin45: "WIEGAND_D1",   // PE14 – GPIO input: Wiegand data 1
   pin46: "READER_LED",   // PE15 – GPIO output: reader LED control
-  pin47: "PB10_NC",      // PB10 – not used
+  pin47: "LOCK_RELAY_DRIVE", // PB10 – GPIO output: relay low-side drive
   pin48: "RMII_TXEN",    // PB11 – ETH_RMII_TX_EN (AF11)
   pin49: "VCAP_1",       // VCAP – internal LDO decoupling (1µF to GND)
   pin50: "VDD_4",        // VDD
@@ -163,8 +163,8 @@ export const ControllerCore = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <chip
       name="U_CTRL_CLK"
       footprint="soic4"
-      pcbX={20}
-      pcbY={-20}
+      pcbX={12}
+      pcbY={-14}
       pinLabels={oscillatorPinLabels}
       pinAttributes={{
         VCC: { requiresPower: true },
@@ -172,16 +172,29 @@ export const ControllerCore = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
       }}
     />
     {/* MCU bulk decoupling */}
-    <capacitor name="C_CTRL_VDD_A" capacitance="100nF" footprint="0402" pcbX={-20} pcbY={-16} />
-    <capacitor name="C_CTRL_VDD_B" capacitance="100nF" footprint="0402" pcbX={20}  pcbY={16}  />
+    <capacitor name="C_CTRL_VDD_A" capacitance="100nF" footprint="0402" pcbX={-10} pcbY={-12} />
+    <capacitor name="C_CTRL_VDD_B" capacitance="100nF" footprint="0402" pcbX={10}  pcbY={12}  />
     {/* VCAP decoupling — mandatory 1µF per STM32F4 design guidelines */}
-    <capacitor name="C_CTRL_VCAP1" capacitance="1uF"   footprint="0603" pcbX={-20} pcbY={0}   />
-    <capacitor name="C_CTRL_VCAP2" capacitance="1uF"   footprint="0603" pcbX={20}  pcbY={4}   />
-    <capacitor name="C_CTRL_VDDA"  capacitance="1uF"   footprint="0603" pcbX={-14} pcbY={-18} />
-    <resistor  name="R_CTRL_RESET_PULLUP"  resistance="10k"  footprint="0402" pcbX={-20} pcbY={8}  />
-    <resistor  name="R_CTRL_BOOT_PULLDOWN" resistance="10k"  footprint="0402" pcbX={-20} pcbY={16} />
-    <resistor  name="R_SERVICE_NRST_LINK"  resistance="0ohm" footprint="0402" pcbX={-10} pcbY={-22} />
-    <resistor  name="R_SERVICE_BOOT_LINK"  resistance="0ohm" footprint="0402" pcbX={0}   pcbY={-22} />
+    <capacitor name="C_CTRL_VCAP1" capacitance="1uF"   footprint="0603" pcbX={10}  pcbY={-2}  />
+    <capacitor name="C_CTRL_VCAP2" capacitance="1uF"   footprint="0603" pcbX={10}  pcbY={2}   />
+    <capacitor name="C_CTRL_VDDA"  capacitance="1uF"   footprint="0603" pcbX={-10} pcbY={-8} />
+    <resistor  name="R_CTRL_RESET_PULLUP"  resistance="10k"  footprint="0402" pcbX={-16} pcbY={8}  />
+    <resistor  name="R_CTRL_BOOT_PULLDOWN" resistance="10k"  footprint="0402" pcbX={-16} pcbY={14} />
+    <resistor  name="R_SERVICE_NRST_LINK"  resistance="0ohm" footprint="0402" pcbX={-8}  pcbY={-18} />
+    <resistor  name="R_SERVICE_BOOT_LINK"  resistance="0ohm" footprint="0402" pcbX={2}   pcbY={-18} />
+    {/* Status/diagnostic passives — below MCU to keep +Y zone clear for field interfaces */}
+    <resistor  name="R_SYNC_PENDING_STATUS" resistance="1k" footprint="0402" pcbX={-26} pcbY={-22} />
+    <capacitor name="C_SYNC_PENDING_FILTER" capacitance="100nF" footprint="0402" pcbX={-16} pcbY={-22} />
+    <resistor  name="R_MGMT_ONLINE_INDICATOR" resistance="1k" footprint="0402" pcbX={-6} pcbY={-22} />
+    <capacitor name="C_MGMT_ONLINE_FILTER" capacitance="100nF" footprint="0402" pcbX={4} pcbY={-22} />
+    <resistor  name="R_MGMT_DEGRADED_INDICATOR" resistance="1k" footprint="0402" pcbX={14} pcbY={-22} />
+    <capacitor name="C_MGMT_DEGRADED_FILTER" capacitance="100nF" footprint="0402" pcbX={24} pcbY={-22} />
+    <resistor  name="R_MGMT_OFFLINE_STATUS" resistance="1k" footprint="0402" pcbX={-26} pcbY={-30} />
+    <capacitor name="C_MGMT_OFFLINE_FILTER" capacitance="100nF" footprint="0402" pcbX={-16} pcbY={-30} />
+    <resistor  name="R_RESYNC_ACTIVE_STATUS" resistance="1k" footprint="0402" pcbX={-6} pcbY={-30} />
+    <capacitor name="C_RESYNC_ACTIVE_FILTER" capacitance="100nF" footprint="0402" pcbX={4} pcbY={-30} />
+    <resistor  name="R_POWER_FAIL_WARN_PULLUP" resistance="10k" footprint="0402" pcbX={14} pcbY={-30} />
+    <capacitor name="C_POWER_FAIL_WARN_FILTER" capacitance="10nF" footprint="0402" pcbX={24} pcbY={-30} />
 
     {/* VDD/VSS rails */}
     <trace from=".U_CTRL > .VDD_1" to="net.V3_3_LOGIC" />
@@ -233,6 +246,7 @@ export const ControllerCore = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <trace from=".U_CTRL > .BUFFER_CS"        to="net.BUFFER_CS" />
     {/* Status/diagnostic GPIO */}
     <trace from=".U_CTRL > .POWER_FAIL_WARN" to="net.POWER_FAIL_WARN" />
+    <trace from=".U_CTRL > .LOCK_RELAY_DRIVE" to="net.LOCK_RELAY_DRIVE" />
     <trace from=".U_CTRL > .MGMT_STATUS"     to="net.MGMT_STATUS" />
     <trace from=".U_CTRL > .MGMT_ONLINE"     to="net.MGMT_ONLINE" />
     <trace from=".U_CTRL > .MGMT_DEGRADED"   to="net.MGMT_DEGRADED" />
@@ -270,5 +284,30 @@ export const ControllerCore = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <trace from=".R_SERVICE_NRST_LINK > .pin2"  to="net.CTRL_RESET_N" />
     <trace from=".R_SERVICE_BOOT_LINK > .pin1"  to="net.SERVICE_BOOT_CFG" />
     <trace from=".R_SERVICE_BOOT_LINK > .pin2"  to="net.CTRL_BOOT_MODE" />
+    {/* Management and retention-status support kept local to the MCU GPIO bank */}
+    <trace from=".R_SYNC_PENDING_STATUS > .pin1" to="net.V3_3_LOGIC" />
+    <trace from=".R_SYNC_PENDING_STATUS > .pin2" to="net.SYNC_PENDING" />
+    <trace from=".C_SYNC_PENDING_FILTER > .pin1" to="net.SYNC_PENDING" />
+    <trace from=".C_SYNC_PENDING_FILTER > .pin2" to="net.GND_LOGIC" />
+    <trace from=".R_MGMT_ONLINE_INDICATOR > .pin1" to="net.V3_3_LOGIC" />
+    <trace from=".R_MGMT_ONLINE_INDICATOR > .pin2" to="net.MGMT_ONLINE" />
+    <trace from=".C_MGMT_ONLINE_FILTER > .pin1" to="net.MGMT_ONLINE" />
+    <trace from=".C_MGMT_ONLINE_FILTER > .pin2" to="net.GND_LOGIC" />
+    <trace from=".R_MGMT_DEGRADED_INDICATOR > .pin1" to="net.V3_3_LOGIC" />
+    <trace from=".R_MGMT_DEGRADED_INDICATOR > .pin2" to="net.MGMT_DEGRADED" />
+    <trace from=".C_MGMT_DEGRADED_FILTER > .pin1" to="net.MGMT_DEGRADED" />
+    <trace from=".C_MGMT_DEGRADED_FILTER > .pin2" to="net.GND_LOGIC" />
+    <trace from=".R_MGMT_OFFLINE_STATUS > .pin1" to="net.V3_3_LOGIC" />
+    <trace from=".R_MGMT_OFFLINE_STATUS > .pin2" to="net.MGMT_OFFLINE" />
+    <trace from=".C_MGMT_OFFLINE_FILTER > .pin1" to="net.MGMT_OFFLINE" />
+    <trace from=".C_MGMT_OFFLINE_FILTER > .pin2" to="net.GND_LOGIC" />
+    <trace from=".R_RESYNC_ACTIVE_STATUS > .pin1" to="net.V3_3_LOGIC" />
+    <trace from=".R_RESYNC_ACTIVE_STATUS > .pin2" to="net.RESYNC_ACTIVE" />
+    <trace from=".C_RESYNC_ACTIVE_FILTER > .pin1" to="net.RESYNC_ACTIVE" />
+    <trace from=".C_RESYNC_ACTIVE_FILTER > .pin2" to="net.GND_LOGIC" />
+    <trace from=".R_POWER_FAIL_WARN_PULLUP > .pin1" to="net.V3_3_LOGIC" />
+    <trace from=".R_POWER_FAIL_WARN_PULLUP > .pin2" to="net.POWER_FAIL_WARN" />
+    <trace from=".C_POWER_FAIL_WARN_FILTER > .pin1" to="net.POWER_FAIL_WARN" />
+    <trace from=".C_POWER_FAIL_WARN_FILTER > .pin2" to="net.GND_LOGIC" />
   </group>
 )

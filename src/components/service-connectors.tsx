@@ -5,6 +5,11 @@ export const SERVICE_CONNECTOR_RELEASE = {
   exactPart: "Harwin M50-3500542",
   approvedUsage: "factory programming, SWD recovery, UART console, reset, and boot-strap access",
   sourcingPath: "Harwin M50 series compatible 2x05 1.27 mm vertical header",
+  isolationBoundary: "service access remains logic-domain only and stays physically separate from installer wiring and LAN-edge hardware",
+  alternatePolicy: "pin-compatible 2x05 1.27 mm headers may substitute only if SWD shroud clearance and mating height remain unchanged",
+  assemblySuitability: "through-hole or selective-solder compatible header outside installer cable-entry paths",
+  footprintReviewOwner: "fabrication closure review",
+  cadModelStatus: "present",
 } as const
 
 type PlacementProps = {
@@ -41,13 +46,17 @@ export const ServiceConnectors = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
         GND_B: { requiresGround: true, includeInBoardPinout: true },
       }}
     />
-    <capacitor name="C_SERVICE_VREF" capacitance="100nF" footprint="0402" pcbX={10} pcbY={0} />
+    <capacitor name="C_SERVICE_VREF" capacitance="100nF" footprint="0402" pcbX={8} pcbY={0} />
     <resistor name="R_SERVICE_SWDIO_SERIES" resistance="47ohm" footprint="0402" pcbX={10} pcbY={-8} />
-    <resistor name="R_SERVICE_SWCLK_SERIES" resistance="47ohm" footprint="0402" pcbX={20} pcbY={-8} />
-    <resistor name="R_SERVICE_UART_TX_SERIES" resistance="47ohm" footprint="0402" pcbX={30} pcbY={-8} />
-    <resistor name="R_SERVICE_UART_RX_SERIES" resistance="47ohm" footprint="0402" pcbX={40} pcbY={-8} />
+    <resistor name="R_SERVICE_SWCLK_SERIES" resistance="47ohm" footprint="0402" pcbX={10} pcbY={8} />
+    <resistor name="R_SERVICE_UART_TX_SERIES" resistance="47ohm" footprint="0402" pcbX={20} pcbY={-8} />
+    <resistor name="R_SERVICE_UART_RX_SERIES" resistance="47ohm" footprint="0402" pcbX={20} pcbY={0} />
+    <resistor name="R_SERVICE_UART_TX_PULLUP" resistance="10k" footprint="0402" pcbX={30} pcbY={-8} />
+    <resistor name="R_SERVICE_UART_RX_PULLUP" resistance="10k" footprint="0402" pcbX={30} pcbY={0} />
     <resistor name="R_SERVICE_NRST_PULLUP" resistance="10k" footprint="0402" pcbX={20} pcbY={8} />
     <resistor name="R_SERVICE_BOOT_CFG_TAG_PULLUP" resistance="10k" footprint="0402" pcbX={30} pcbY={8} />
+    <capacitor name="C_SERVICE_BOOT_FILTER" capacitance="10nF" footprint="0402" pcbX={40} pcbY={8} />
+    <capacitor name="C_WATCHDOG_ALERT_FILTER" capacitance="10nF" footprint="0402" pcbX={40} pcbY={0} />
 
     <trace from=".J_SERVICE > .VTREF" to="net.V3_3_LOGIC" />
     <trace from=".J_SERVICE > .SWDIO" to=".R_SERVICE_SWDIO_SERIES > .pin1" />
@@ -65,9 +74,17 @@ export const ServiceConnectors = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <trace from=".R_SERVICE_SWCLK_SERIES > .pin2" to="net.SERVICE_SWCLK" />
     <trace from=".R_SERVICE_UART_TX_SERIES > .pin2" to="net.SERVICE_UART_TX" />
     <trace from=".R_SERVICE_UART_RX_SERIES > .pin2" to="net.SERVICE_UART_RX" />
+    <trace from=".R_SERVICE_UART_TX_PULLUP > .pin1" to="net.V3_3_LOGIC" />
+    <trace from=".R_SERVICE_UART_TX_PULLUP > .pin2" to="net.SERVICE_UART_TX" />
+    <trace from=".R_SERVICE_UART_RX_PULLUP > .pin1" to="net.V3_3_LOGIC" />
+    <trace from=".R_SERVICE_UART_RX_PULLUP > .pin2" to="net.SERVICE_UART_RX" />
     <trace from=".R_SERVICE_NRST_PULLUP > .pin1" to="net.V3_3_LOGIC" />
     <trace from=".R_SERVICE_NRST_PULLUP > .pin2" to="net.SERVICE_NRST" />
     <trace from=".R_SERVICE_BOOT_CFG_TAG_PULLUP > .pin1" to="net.V3_3_LOGIC" />
     <trace from=".R_SERVICE_BOOT_CFG_TAG_PULLUP > .pin2" to="net.SERVICE_BOOT_CFG" />
+    <trace from=".C_SERVICE_BOOT_FILTER > .pin1" to="net.SERVICE_BOOT_CFG" />
+    <trace from=".C_SERVICE_BOOT_FILTER > .pin2" to="net.GND_LOGIC" />
+    <trace from=".C_WATCHDOG_ALERT_FILTER > .pin1" to="net.WATCHDOG_ALERT" />
+    <trace from=".C_WATCHDOG_ALERT_FILTER > .pin2" to="net.GND_LOGIC" />
   </group>
 )

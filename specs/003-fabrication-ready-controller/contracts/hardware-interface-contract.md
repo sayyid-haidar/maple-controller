@@ -19,12 +19,14 @@ fabrication-ready one-door controller must preserve while locking final parts.
 
 ## Ethernet / PoE Contract
 
-- The final hardware package must name the exact approved LAN-entry part and its
-  matching footprint.
-- The LAN boundary must show the relationship among the magjack or magnetics,
-  PoE extraction path, PHY connection, and any ESD or shield treatment.
-- Ethernet board-edge placement, keepout, and enclosure-facing assumptions must
-  be explicit enough for first-article assembly review.
+- The LAN-entry hardware is fixed to the Abracon `ARJP11A-MA` integrated 10/100
+  magjack on the KiCad `RJ45_Abracon_ARJP11A-MA_Horizontal` footprint.
+- The LAN boundary must show the relationship among the released magjack,
+  PoE taps feeding `V48_POE_IN`, PHY-side series links, and the LAN shield RC
+  bleed into logic ground.
+- Ethernet board-edge placement assumes the connector body overhang is confined
+  to the left enclosure-facing edge and that tall logic-side parts stay out of
+  the shield corridor for first-article assembly review.
 - No Ethernet closure work may collapse the existing separation between LAN/PoE
   logic power and the external lock domain.
 
@@ -32,11 +34,15 @@ fabrication-ready one-door controller must preserve while locking final parts.
 
 - The lock path must continue to use a dry relay and must not become a logic-fed
   wet output.
-- The exact relay device, contact form, and suppression strategy must be named.
+- The exact relay device is the Omron `G5LE-1-DC12` on the KiCad
+  `Relay_SPDT_Omron-G5LE-1` footprint, with a PB10-driven low-side transistor
+  and a dedicated flyback diode for coil suppression.
 - Installer-facing terminals for external lock power and relay contacts must be
   exact approved parts with manufacturable footprints.
-- Creepage, clearance, and placement assumptions for the relay region must be
-  documented when they affect the release decision.
+- Creepage, clearance, and placement assumptions for the relay region require
+  the relay body and 5.08 mm field terminals to stay grouped at the installer
+  edge with the coil-drive network kept on the logic side of the dry-contact
+  boundary.
 
 ## Retention / Service Contract
 
@@ -62,3 +68,14 @@ fabrication-ready one-door controller must preserve while locking final parts.
   it must not silently change the accepted power-domain boundaries, reader mode
   support, retention intent, or service separation established in Features 001
   and 002.
+
+## Final Contract-Preservation Notes
+
+- Ethernet closure preserves the PoE-only logic-power boundary; the ARJP11A-MA
+  implementation does not create any wet-output path into the lock domain.
+- Relay closure preserves the dry-contact installer boundary; only the relay
+  coil is logic powered, while COM/NO/NC remain installer supplied.
+- Service and reader access remain physically separate, with no migration of
+  reader or lock signals onto the Harwin recovery header.
+- No scope change has been accepted for 003 beyond leaving `rtc_backup_source`
+  as the final explicit fabrication blocker.

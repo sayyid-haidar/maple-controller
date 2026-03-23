@@ -36,6 +36,8 @@ treated as ready for first-article fabrication.
 - Sourcing uncertainty that materially threatens ordering remains a release blocker.
 - Approved connector and electromechanical parts must declare whether they are
   accepted as single-source exceptions or have explicit alternates.
+- The current candidate treats `ARJP11A-MA` and `G5LE-1-DC12` as temporary
+  single-source exceptions until geometry-compatible alternates are reviewed.
 
 ## Bring-Up Contract
 
@@ -46,6 +48,8 @@ treated as ready for first-article fabrication.
   them without relying on undocumented tribal knowledge.
 - The bring-up package must name the file or artifact where each check's pass
   criteria are maintained.
+- The current release package must explicitly cover ARJP11A-MA link and PoE-entry
+  verification, PB10-driven relay actuation, and service-header accessibility.
 
 ## Validation Contract
 

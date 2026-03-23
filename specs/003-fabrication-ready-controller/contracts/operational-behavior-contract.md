@@ -57,3 +57,14 @@ and fabrication closure work are complete.
   `fabrication-blocked` rather than `fabrication-ready`.
 - Any deliberate narrowing of architecture or interface support requires an
   explicit scope-change note rather than silent drift during part lock-in.
+
+## Final Candidate Preservation Notes
+
+- The current candidate keeps PoE limited to logic, networking, retention,
+  service, and reader auxiliary functions.
+- The current candidate keeps the lock path dry-contact only; the new PB10 relay
+  drive energizes the coil without sourcing installer lock current.
+- OSDP plus Wiegand support remains intact, and service recovery remains on the
+  dedicated Harwin header.
+- The only accepted unfinished item is `rtc_backup_source`, which keeps the
+  board in `fabrication-blocked` state without changing the baseline retention intent.

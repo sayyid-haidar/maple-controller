@@ -130,6 +130,49 @@ contains all of the following in a consistent state:
 - bring-up checklist covering power, Ethernet, relay, reader, retention, and service access
 - green TypeScript and `tsci` validation results for the release candidate
 
+## Manufacturing Package
+
+- Assembly method: mixed SMT reflow plus selective solder for the LAN magjack,
+  relay, service header, and installer-facing terminals.
+- Critical footprint reviews:
+  - Abracon `ARJP11A-MA` LAN entry
+  - Omron `G5LE-1-DC12` relay
+  - Phoenix Contact `MKDS 1,5/3-5,08` and `MC 1,5/4-G-3,81` field terminals
+  - Harwin `M50-3500542` service header
+- Handling constraints:
+  - keep the LAN shield body and relay height clear of enclosure features
+  - keep the relay driver parts on the logic side of the dry-contact corridor
+  - preserve straight cable-entry direction for installer terminals
+
+## Procurement Package
+
+| Part key | Source path | Alternate policy | Lifecycle note |
+| -------- | ----------- | ---------------- | -------------- |
+| `ethernet_magjack` | Abracon distribution | no alternate until shield/body geometry is revalidated | `unknown` |
+| `lock_relay` | Digikey Omron distribution | no alternate until drill pattern and body envelope match | `active` |
+| `service_debug_header` | Harwin M50 series | pin-compatible alternates only with identical mating height | `active` |
+| `reader_terminal_blocks` | Phoenix Contact MC series | pitch- and entry-compatible alternates only | `active` |
+| `supervised_input_terminal_blocks` | Phoenix Contact MC series | pitch- and entry-compatible alternates only | `active` |
+| `rtc_backup_source` | not approved | blocked | `unknown` |
+
+Current single-source exceptions: `STM32F407VET6`, `DS3231MZ+`, `MB85RS256A`,
+`ARJP11A-MA`, and `G5LE-1-DC12`.
+
+## Bring-Up Package
+
+Minimum first-article evidence for the current candidate:
+
+1. Verify `V48_POE_IN`, `V12_POE_INT`, `V5_LOGIC`, and `V3_3_LOGIC` in order.
+2. Verify the ARJP11A-MA link comes up, the PHY resets cleanly, and the LAN shield
+   RC bond does not short into field return.
+3. Verify PB10 actuates the Omron relay, the flyback path clamps correctly, and
+   COM/NO/NC continuity matches fail-safe and fail-secure wiring expectations.
+4. Verify OSDP/Wiegand continuity and auxiliary reader power remain unaffected by
+   the LAN and relay closures.
+5. Verify FRAM retention and RTC behavior still pass, with the RTC backup source
+   remaining an explicit release blocker.
+6. Verify the service header can be accessed without disturbing LAN or field wiring.
+
 ## Blocker Traceability
 
 Each fabrication blocker must be traceable through all three layers below:
@@ -140,10 +183,10 @@ Each fabrication blocker must be traceable through all three layers below:
 
 Use the following part keys as the primary traceability spine during 003:
 
-- `ethernet_magjack`
-- `ethernet_poe_entry_boundary`
-- `lock_relay`
-- `lock_relay_drive`
+- `ethernet_magjack` (closed)
+- `ethernet_poe_entry_boundary` (closed)
+- `lock_relay` (closed)
+- `lock_relay_drive` (closed)
 - `rtc_backup_source`
 - `service_debug_header`
 - `reader_terminal_blocks`
@@ -169,11 +212,24 @@ Use the following part keys as the primary traceability spine during 003:
 
 ## Known Risks To Eliminate In 003
 
-- Premature `fabrication-ready` status in typed models without closed release evidence
-- Missing physical Ethernet entry implementation despite a concrete PHY choice
-- Missing physical relay device despite existing field-terminal modeling
-- Board-level retention placeholder still present in the main circuit shell
-- Family-level connector choices that still need exact approved parts and sourcing treatment
+- Premature `fabrication-ready` status before the final `rtc_backup_source` blocker is cleared
+- RTC backup-source ambiguity that could overstate retained-time capability at release
+
+## Feature Handoff
+
+- Current release state: `fabrication-blocked`
+- Remaining named blocker: `rtc_backup_source`
+- Closed high-risk interfaces: Ethernet / PoE LAN entry and dry relay lock output
+- Artifact locations:
+   - typed release ledger: `src/lib/controller-types.ts`
+   - sourcing and interface ledger: `src/lib/wiring-contracts.ts`
+   - LAN entry implementation: `src/components/ethernet-poe-front-end.tsx`
+   - relay implementation: `src/components/relay-lock-output.tsx`
+   - release contracts and handoff docs: `specs/003-fabrication-ready-controller/contracts/` and `specs/003-fabrication-ready-controller/plan.md`
+- Release workflow from here:
+   1. approve or explicitly bound `rtc_backup_source`
+   2. rerun the full validation set
+   3. move `fabricationStatus` and the release gate from blocked to ready only after typed and document packages agree
 
 ## Definition Of Done For Planning
 

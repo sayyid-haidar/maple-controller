@@ -5,6 +5,7 @@ export const RETENTION_RELEASE = {
   framPart: "MB85RS256A",
   backupSupportStatus: "blocked pending approved long-duration backup source",
   localHoldUpCapacitance: "1uF",
+  architecturePreservation: "RTC and FRAM remain mandatory for offline event ordering; only the long-duration backup source stays blocked",
 } as const
 
 type PlacementProps = {
@@ -40,6 +41,7 @@ const framPinLabels = {
 
 export const RetentionSupport = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
   <group pcbX={pcbX} pcbY={pcbY}>
+    {/* RTC and FRAM side by side — compact for near-MCU placement */}
     <chip
       name="U_RTC"
       footprint="kicad:Package_SO/SOIC-8_3.9x4.9mm_P1.27mm"
@@ -59,7 +61,7 @@ export const RetentionSupport = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
       footprint="kicad:Package_SO/SOIC-8_3.9x4.9mm_P1.27mm"
       cadModel={{ stepUrl: KICAD_STEP_MODELS.soic8_39x49_p127 }}
       supplierPartNumbers={{ lcsc: ["C92189"] }}
-      pcbX={16}
+      pcbX={14}
       pcbY={0}
       pinLabels={framPinLabels}
       pinAttributes={{
@@ -67,9 +69,18 @@ export const RetentionSupport = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
         GND: { requiresGround: true },
       }}
     />
-    <capacitor name="C_RTC_VDD" capacitance="100nF" footprint="0402" pcbX={0} pcbY={10} />
-    <capacitor name="C_FRAM_VDD" capacitance="100nF" footprint="0402" pcbX={16} pcbY={10} />
-    <capacitor name="C_RTC_BACKUP_HOLDUP" capacitance={RETENTION_RELEASE.localHoldUpCapacitance} footprint="0603" pcbX={-10} pcbY={0} />
+    {/* Decoupling — directly adjacent to ICs */}
+    <capacitor name="C_RTC_VDD" capacitance="100nF" footprint="0402" pcbX={-6} pcbY={6} />
+    <capacitor name="C_FRAM_VDD" capacitance="100nF" footprint="0402" pcbX={20} pcbY={6} />
+    <capacitor name="C_RTC_BACKUP_HOLDUP" capacitance={RETENTION_RELEASE.localHoldUpCapacitance} footprint="0603" pcbX={-6} pcbY={0} />
+    <capacitor name="C_EVENT_BUFFER_HOLDUP" capacitance={RETENTION_RELEASE.localHoldUpCapacitance} footprint="0402" pcbX={20} pcbY={0} />
+    {/* I2C pullups — between RTC and FRAM */}
+    <resistor name="R_RTC_SCL_PULLUP" resistance="4.7k" footprint="0402" pcbX={0} pcbY={12} />
+    <resistor name="R_RTC_SDA_PULLUP" resistance="4.7k" footprint="0402" pcbX={7} pcbY={12} />
+    <resistor name="R_RTC_INT_PULLUP" resistance="10k" footprint="0402" pcbX={14} pcbY={12} />
+    {/* SPI pullups — below FRAM */}
+    <resistor name="R_BUFFER_SPI_CLK_PULLUP" resistance="10k" footprint="0402" pcbX={14} pcbY={-6} />
+    <resistor name="R_BUFFER_CS_PULLUP" resistance="10k" footprint="0402" pcbX={20} pcbY={-6} />
 
     <trace from=".U_RTC > .RTC_INT" to="net.RTC_INT" />
     <trace from=".U_RTC > .RST" to="net.V3_3_LOGIC" />{/* internal 50kΩ pullup; tie to VCC */}
@@ -92,5 +103,17 @@ export const RetentionSupport = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <trace from=".C_FRAM_VDD > .pin2" to="net.GND_LOGIC" />
     <trace from=".C_RTC_BACKUP_HOLDUP > .pin1" to="net.VBAT_RTC" />
     <trace from=".C_RTC_BACKUP_HOLDUP > .pin2" to="net.GND_LOGIC" />
+    <trace from=".C_EVENT_BUFFER_HOLDUP > .pin1" to="net.V3_3_LOGIC" />
+    <trace from=".C_EVENT_BUFFER_HOLDUP > .pin2" to="net.GND_LOGIC" />
+    <trace from=".R_RTC_SCL_PULLUP > .pin1" to="net.V3_3_LOGIC" />
+    <trace from=".R_RTC_SCL_PULLUP > .pin2" to="net.RTC_SCL" />
+    <trace from=".R_RTC_SDA_PULLUP > .pin1" to="net.V3_3_LOGIC" />
+    <trace from=".R_RTC_SDA_PULLUP > .pin2" to="net.RTC_SDA" />
+    <trace from=".R_RTC_INT_PULLUP > .pin1" to="net.V3_3_LOGIC" />
+    <trace from=".R_RTC_INT_PULLUP > .pin2" to="net.RTC_INT" />
+    <trace from=".R_BUFFER_SPI_CLK_PULLUP > .pin1" to="net.V3_3_LOGIC" />
+    <trace from=".R_BUFFER_SPI_CLK_PULLUP > .pin2" to="net.BUFFER_SPI_CLK" />
+    <trace from=".R_BUFFER_CS_PULLUP > .pin1" to="net.V3_3_LOGIC" />
+    <trace from=".R_BUFFER_CS_PULLUP > .pin2" to="net.BUFFER_CS" />
   </group>
 )

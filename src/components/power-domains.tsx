@@ -30,6 +30,7 @@ export const PowerDomains = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <chip
       name="U_REG_3V3"
       footprint="kicad:Package_TO_SOT_SMD/SOT-223-3_TabPin2"
+      cadModel={{ stepUrl: KICAD_STEP_MODELS.sot_223 }}
       supplierPartNumbers={{ lcsc: ["C6186"] }}
       pcbX={32}
       pcbY={0}
@@ -42,7 +43,7 @@ export const PowerDomains = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <capacitor name="C_LOGIC_3V3" capacitance="100nF" footprint="0402" pcbX={32} pcbY={10} />
     <resistor name="R_READER_AUX_FEED" resistance="0ohm" footprint="0402" pcbX={48} pcbY={0} />
     <capacitor name="C_READER_AUX" capacitance="10uF" footprint="0805" pcbX={48} pcbY={10} />
-    <resistor name="R_LOCK_EXT_SENSE" resistance="10k" footprint="0402" pcbX={64} pcbY={0} />
+    <resistor name="R_LOCK_EXT_BLEED" resistance="10k" footprint="0402" pcbX={64} pcbY={0} />
     <capacitor name="C_LOCK_EXT_FILTER" capacitance="100nF" footprint="0402" pcbX={64} pcbY={10} />
 
     <trace from=".U_POE_PD > .VIN" to="net.V48_POE_IN" />
@@ -67,8 +68,8 @@ export const PowerDomains = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <trace from=".R_READER_AUX_FEED > .pin2" to="net.V12_READER_AUX" />
     <trace from=".C_READER_AUX > .pin1" to="net.V12_READER_AUX" />
     <trace from=".C_READER_AUX > .pin2" to="net.GND_FIELD" />
-    <trace from=".R_LOCK_EXT_SENSE > .pin1" to="net.V24_LOCK_EXT" />
-    <trace from=".R_LOCK_EXT_SENSE > .pin2" to="net.LOCK_RELAY_COM" />
+    <trace from=".R_LOCK_EXT_BLEED > .pin1" to="net.V24_LOCK_EXT" />
+    <trace from=".R_LOCK_EXT_BLEED > .pin2" to="net.GND_FIELD" />
     <trace from=".C_LOCK_EXT_FILTER > .pin1" to="net.V12_LOCK_EXT" />
     <trace from=".C_LOCK_EXT_FILTER > .pin2" to="net.GND_FIELD" />
   </group>

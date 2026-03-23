@@ -34,6 +34,21 @@ export interface FabricationClosureLedgerEntry {
   blockerSummary: string | null
 }
 
+export interface FabricationSourcingRecord {
+  partKey: string
+  lifecycleStatus: "active" | "unknown" | "at_risk"
+  sourcingPath: string
+  alternateTreatment: string
+  footprintReviewOwner: string
+  assemblyNote: string
+}
+
+export interface ContractPreservationRecord {
+  subsystem: string
+  preservedContract: string
+  sourceOfTruthFiles: string[]
+}
+
 export const powerNets: NetContract[] = [
   { name: "V48_POE_IN", purpose: "PoE input before PD conditioning" },
   { name: "V12_POE_INT", purpose: "Intermediate PoE-derived rail before local point-of-load regulation" },
@@ -67,6 +82,7 @@ export const signalNets: NetContract[] = [
   { name: "ETH_MDC", purpose: "PHY management clock" },
   { name: "ETH_MDIO", purpose: "PHY management data" },
   { name: "ETH_PHY_RESET_N", purpose: "PHY reset control" },
+  { name: "ETH_SHIELD", purpose: "LAN shield bond kept at the board edge and RC-bled into logic return" },
   { name: "CTRL_RESET_N", purpose: "Primary controller reset line" },
   { name: "CTRL_BOOT_MODE", purpose: "Primary controller boot or recovery strap" },
   { name: "CTRL_OSC_IN", purpose: "Controller oscillator input placeholder" },
@@ -88,6 +104,7 @@ export const signalNets: NetContract[] = [
   { name: "LOCK_RELAY_COM", purpose: "Relay common contact" },
   { name: "LOCK_RELAY_NO", purpose: "Relay normally-open contact" },
   { name: "LOCK_RELAY_NC", purpose: "Relay normally-closed contact" },
+  { name: "LOCK_RELAY_DRIVE", purpose: "MCU low-side drive control for the dry relay coil" },
   { name: "MGMT_STATUS", purpose: "Management link status indication" },
   { name: "MGMT_ONLINE", purpose: "Explicit online-status indication" },
   { name: "MGMT_DEGRADED", purpose: "Explicit degraded-management indication" },
@@ -219,11 +236,11 @@ export const installerInterfaces: InterfaceContract[] = [
 export const fabricationClosureLedger: FabricationClosureLedgerEntry[] = [
   {
     interfaceName: "ethernet_poe_rj45",
-    status: "blocked",
+    status: "approved",
     owningFiles: ["src/components/ethernet-poe-front-end.tsx", "src/circuits/one-door-controller.tsx", "src/lib/controller-types.ts"],
     criticalPartKeys: ["ethernet_magjack", "ethernet_poe_entry_boundary"],
-    closureSummary: "PHY selection is stable, but the board-edge PoE-capable LAN entry hardware remains unresolved.",
-    blockerSummary: "Approve the exact magjack or connector-plus-magnetics implementation and finalize PoE ingress plus shield treatment.",
+    closureSummary: "LAN entry is fixed to the Abracon ARJP11A-MA integrated magjack with explicit PoE taps, board-edge shield treatment, and PHY-side series links.",
+    blockerSummary: null,
   },
   {
     interfaceName: "external_lock_power",
@@ -235,11 +252,11 @@ export const fabricationClosureLedger: FabricationClosureLedgerEntry[] = [
   },
   {
     interfaceName: "dry_relay_output",
-    status: "blocked",
+    status: "approved",
     owningFiles: ["src/components/relay-lock-output.tsx", "src/components/power-domains.tsx", "src/lib/controller-types.ts"],
     criticalPartKeys: ["lock_relay", "lock_relay_drive"],
-    closureSummary: "Field contact terminals are approved, but the electromechanical relay device and coil-drive network are not yet implemented.",
-    blockerSummary: "Approve one dry-contact relay and implement its full drive and suppression path.",
+    closureSummary: "The lock interface now uses an Omron G5LE-1-DC12 Form-C relay with a dedicated PB10-driven low-side transistor and flyback path while preserving the dry-contact boundary.",
+    blockerSummary: null,
   },
   {
     interfaceName: "osdp_reader_port",
@@ -293,20 +310,134 @@ export const fabricationCriticalPartTraceability: Pick<
   { partKey: "rtc_device", status: "approved", sourceOfTruthFile: "src/components/retention-support.tsx" },
   { partKey: "event_fram", status: "approved", sourceOfTruthFile: "src/components/retention-support.tsx" },
   { partKey: "rtc_backup_source", status: "blocked", sourceOfTruthFile: "src/components/retention-support.tsx" },
-  { partKey: "ethernet_magjack", status: "blocked", sourceOfTruthFile: "src/components/ethernet-poe-front-end.tsx" },
-  { partKey: "ethernet_poe_entry_boundary", status: "blocked", sourceOfTruthFile: "src/components/ethernet-poe-front-end.tsx" },
-  { partKey: "lock_relay", status: "blocked", sourceOfTruthFile: "src/components/relay-lock-output.tsx" },
-  { partKey: "lock_relay_drive", status: "blocked", sourceOfTruthFile: "src/components/relay-lock-output.tsx" },
+  { partKey: "ethernet_magjack", status: "approved", sourceOfTruthFile: "src/components/ethernet-poe-front-end.tsx" },
+  { partKey: "ethernet_poe_entry_boundary", status: "approved", sourceOfTruthFile: "src/components/ethernet-poe-front-end.tsx" },
+  { partKey: "lock_relay", status: "approved", sourceOfTruthFile: "src/components/relay-lock-output.tsx" },
+  { partKey: "lock_relay_drive", status: "approved", sourceOfTruthFile: "src/components/relay-lock-output.tsx" },
+]
+
+export const fabricationSourcingRecords: FabricationSourcingRecord[] = [
+  {
+    partKey: "controller_mcu",
+    lifecycleStatus: "active",
+    sourcingPath: "LCSC C8601",
+    alternateTreatment: "single-source exception until firmware and package-compatible alternates are qualified",
+    footprintReviewOwner: "hardware architecture review",
+    assemblyNote: "LQFP-100 SMT placement with released KiCad body model",
+  },
+  {
+    partKey: "service_debug_header",
+    lifecycleStatus: "active",
+    sourcingPath: "Harwin M50 series distribution",
+    alternateTreatment: "pin-compatible headers allowed only with identical 1.27 mm pitch, 2x05 pinout, and mating height",
+    footprintReviewOwner: "fabrication closure review",
+    assemblyNote: "through-hole header kept clear of installer cable entry",
+  },
+  {
+    partKey: "reader_terminal_blocks",
+    lifecycleStatus: "active",
+    sourcingPath: "Phoenix Contact MC-series distribution",
+    alternateTreatment: "alternates require identical 3.81 mm pitch, entry direction, and retention geometry",
+    footprintReviewOwner: "fabrication closure review",
+    assemblyNote: "selective-solder field terminal on installer edge",
+  },
+  {
+    partKey: "supervised_input_terminal_blocks",
+    lifecycleStatus: "active",
+    sourcingPath: "Phoenix Contact MC-series distribution",
+    alternateTreatment: "alternates require identical 3.81 mm pitch, entry direction, and retention geometry",
+    footprintReviewOwner: "fabrication closure review",
+    assemblyNote: "selective-solder field terminal on installer edge",
+  },
+  {
+    partKey: "rtc_device",
+    lifecycleStatus: "active",
+    sourcingPath: "LCSC C255630",
+    alternateTreatment: "single-source exception until RTC drift, package, and backup-domain equivalence are reviewed",
+    footprintReviewOwner: "retention review",
+    assemblyNote: "SOIC-8 SMT device with released body model",
+  },
+  {
+    partKey: "event_fram",
+    lifecycleStatus: "active",
+    sourcingPath: "LCSC C92189",
+    alternateTreatment: "single-source exception until SPI FRAM timing and write-endurance equivalence are reviewed",
+    footprintReviewOwner: "retention review",
+    assemblyNote: "SOIC-8 SMT device with released body model",
+  },
+  {
+    partKey: "ethernet_magjack",
+    lifecycleStatus: "unknown",
+    sourcingPath: "Abracon ARJP11A distribution",
+    alternateTreatment: "no alternate approved until shield tab geometry, body overhang, and PoE tap mapping are revalidated",
+    footprintReviewOwner: "LAN entry review",
+    assemblyNote: "through-hole board-edge magjack in mixed-assembly flow",
+  },
+  {
+    partKey: "ethernet_poe_entry_boundary",
+    lifecycleStatus: "active",
+    sourcingPath: "0402 passive assembly path local to the LAN edge",
+    alternateTreatment: "standard passive equivalents allowed if voltage class and LAN-edge placement remain unchanged",
+    footprintReviewOwner: "LAN entry review",
+    assemblyNote: "SMT shield-bleed and bias network held inside the LAN keepout envelope",
+  },
+  {
+    partKey: "lock_relay",
+    lifecycleStatus: "active",
+    sourcingPath: "Digikey Omron relay distribution",
+    alternateTreatment: "no alternate approved until drill pattern, body height, and contact rating match the released relay corridor",
+    footprintReviewOwner: "lock-interface review",
+    assemblyNote: "through-hole relay grouped with installer terminals and reviewed for enclosure height",
+  },
+  {
+    partKey: "lock_relay_drive",
+    lifecycleStatus: "active",
+    sourcingPath: "standard SOT-23 and SOD-123 assembly path",
+    alternateTreatment: "device substitutions require equivalent current gain, coil current margin, and reverse-recovery behavior",
+    footprintReviewOwner: "lock-interface review",
+    assemblyNote: "SMT drive parts remain on the logic side of the dry-contact corridor",
+  },
+  {
+    partKey: "rtc_backup_source",
+    lifecycleStatus: "unknown",
+    sourcingPath: "not approved",
+    alternateTreatment: "blocked until the backup topology and part class are explicitly approved",
+    footprintReviewOwner: "retention review",
+    assemblyNote: "hold-up-only placeholder remains insufficient for release",
+  },
+]
+
+export const contractPreservationRecords: ContractPreservationRecord[] = [
+  {
+    subsystem: "ethernet_and_poe",
+    preservedContract: "PoE remains limited to logic and network power; LAN entry does not source installer lock current.",
+    sourceOfTruthFiles: ["src/components/ethernet-poe-front-end.tsx", "src/components/power-domains.tsx"],
+  },
+  {
+    subsystem: "dry_lock_boundary",
+    preservedContract: "The released relay keeps COM/NO/NC as a dry installer-supplied boundary while the coil stays on the logic side.",
+    sourceOfTruthFiles: ["src/components/relay-lock-output.tsx", "src/components/power-domains.tsx"],
+  },
+  {
+    subsystem: "reader_modes",
+    preservedContract: "OSDP RS-485 remains preferred and Wiegand remains available without reusing the service connector.",
+    sourceOfTruthFiles: ["src/components/reader-interfaces.tsx", "src/components/service-connectors.tsx"],
+  },
+  {
+    subsystem: "retention",
+    preservedContract: "RTC and FRAM remain part of the baseline; only the backup source remains blocked.",
+    sourceOfTruthFiles: ["src/components/retention-support.tsx", "src/circuits/one-door-controller.tsx"],
+  },
 ]
 
 export const connectorFamilyAssignments: ConnectorFamilyAssignment[] = [
   {
     interfaceName: "ethernet_poe_rj45",
     connectorFamily: "shielded_rj45_magjack",
-    exactPart: "PoE-capable integrated magjack TBD",
+    exactPart: "Abracon ARJP11A-MA",
     pinCount: 8,
-    status: "blocked",
-    notes: "Integrated magnetics and shield handling stay at the LAN edge, but the final part remains a fabrication blocker.",
+    status: "approved",
+    notes: "Integrated magnetics, PoE taps, and shield tabs all terminate at the LAN edge with an explicit RC shield bleed strategy.",
     sourceOfTruthFile: "src/components/ethernet-poe-front-end.tsx",
   },
   {

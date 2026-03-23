@@ -7,8 +7,67 @@ import { RelayLockOutput } from "../components/relay-lock-output"
 import { ServiceConnectors } from "../components/service-connectors"
 import { SupervisedInputBank } from "../components/supervised-input-bank"
 import { controllerBoardModel } from "../lib/controller-types"
+// ── Board Zone Map ──────────────────────────────────────────────────
+// TOP edge (+Y): all installer field terminals (supervised inputs, readers, relay/lock)
+// LEFT edge (-X): Ethernet RJ45 magjack + PHY
+// CENTER: STM32F407 MCU
+// RIGHT of center: retention (RTC + FRAM) near MCU I2C/SPI pins
+// BOTTOM center (-Y): power domains for balanced distribution
+// BOTTOM left: service/debug header
 
-const retentionClosure = controllerBoardModel.retentionClosure
+const ethernetPlacementConstraint = {
+  groupX: -58,
+  groupY: 0,
+  boardEdge: "left enclosure edge, vertically centered",
+  keepout: "reserve the connector overhang at the left board edge and keep tall logic-side parts 3 mm clear of the shield body",
+  shieldBoundary: "service header remains out of the LAN shield corridor",
+} as const
+
+const supervisedInputPlacementConstraint = {
+  groupX: -44,
+  groupY: 34,
+  boardEdge: "top-left installer edge",
+  cableEntry: "terminals face top edge for straight installer cable entry",
+} as const
+
+const readerPlacementConstraint = {
+  groupX: 5,
+  groupY: 34,
+  boardEdge: "top-center installer edge",
+  cableEntry: "OSDP and Wiegand terminals side-by-side facing top edge",
+} as const
+
+const relayPlacementConstraint = {
+  groupX: 48,
+  groupY: 32,
+  fieldEdge: "top-right installer edge",
+  creepage: "keep relay body and 5.08 mm terminals grouped away from low-voltage logic routing",
+  cableEntry: "relay and external-lock terminals face top edge for straight installer cable entry",
+} as const
+
+const retentionPlacementConstraint = {
+  groupX: 28,
+  groupY: -5,
+  proximity: "near MCU I2C (PB6/PB7) and SPI3 (PB3-PB5/PA15) pins for short traces",
+} as const
+
+const powerPlacementConstraint = {
+  groupX: 0,
+  groupY: -36,
+  distribution: "center-bottom for balanced power distribution to all board zones",
+} as const
+
+const servicePlacementConstraint = {
+  groupX: -55,
+  groupY: -32,
+  isolation: "lower-left logic corner, outside the LAN shield corridor and away from installer wiring",
+} as const
+
+const releaseCandidateBoundaryNotes = {
+  ethernet: "LAN entry stays at the left board edge and remains separate from the service connector corridor.",
+  relay: "Dry-contact switching remains isolated from PoE-derived logic rails except for the relay coil drive.",
+  retention: "Only RTC backup-source closure remains open; RTC and FRAM stay integrated into the candidate.",
+} as const
 
 export const OneDoorController = () => (
   <board
@@ -17,105 +76,38 @@ export const OneDoorController = () => (
     layers={controllerBoardModel.layerCount}
     routingDisabled
   >
-    <group pcbX={-60} pcbY={-26}>
+    <group pcbX={ethernetPlacementConstraint.groupX} pcbY={ethernetPlacementConstraint.groupY}>
       <EthernetPoeFrontEnd />
     </group>
 
-    <group pcbX={4} pcbY={-45}>
+    <group pcbX={powerPlacementConstraint.groupX} pcbY={powerPlacementConstraint.groupY}>
       <PowerDomains />
     </group>
 
-    <group pcbX={-4} pcbY={0}>
+    <group pcbX={0} pcbY={0}>
       <ControllerCore />
     </group>
 
-    <group pcbX={30} pcbY={8}>
+    <group pcbX={readerPlacementConstraint.groupX} pcbY={readerPlacementConstraint.groupY}>
       <ReaderInterfaces />
     </group>
 
-    <group pcbX={54} pcbY={-28}>
+    <group pcbX={retentionPlacementConstraint.groupX} pcbY={retentionPlacementConstraint.groupY}>
       <RetentionSupport />
     </group>
 
-    <group pcbX={-52} pcbY={34}>
+    <group pcbX={supervisedInputPlacementConstraint.groupX} pcbY={supervisedInputPlacementConstraint.groupY}>
       <SupervisedInputBank />
     </group>
 
-    <group pcbX={36} pcbY={40}>
+    <group pcbX={relayPlacementConstraint.groupX} pcbY={relayPlacementConstraint.groupY}>
       <RelayLockOutput />
     </group>
 
-    <group pcbX={-76} pcbY={0}>
+    <group pcbX={servicePlacementConstraint.groupX} pcbY={servicePlacementConstraint.groupY}>
       <ServiceConnectors />
     </group>
 
-    <capacitor name="C_EVENT_BUFFER_HOLDUP" capacitance={retentionClosure.localHoldUpCapacitance} footprint="0402" pcbX={-60} pcbY={40} />
-    <resistor name="R_SYNC_PENDING_STATUS" resistance="1k" footprint="0402" pcbX={-52} pcbY={40} />
-    <capacitor name="C_SYNC_PENDING_FILTER" capacitance="100nF" footprint="0402" pcbX={-44} pcbY={40} />
-    <resistor name="R_MGMT_OFFLINE_STATUS" resistance="1k" footprint="0402" pcbX={-36} pcbY={40} />
-    <capacitor name="C_MGMT_OFFLINE_FILTER" capacitance="100nF" footprint="0402" pcbX={-28} pcbY={40} />
-    <resistor name="R_RESYNC_ACTIVE_STATUS" resistance="1k" footprint="0402" pcbX={-20} pcbY={40} />
-    <capacitor name="C_RESYNC_ACTIVE_FILTER" capacitance="100nF" footprint="0402" pcbX={-12} pcbY={40} />
-    <resistor name="R_POWER_FAIL_WARN_PULLUP" resistance="10k" footprint="0402" pcbX={-4} pcbY={40} />
-    <capacitor name="C_POWER_FAIL_WARN_FILTER" capacitance="10nF" footprint="0402" pcbX={4} pcbY={40} />
-    <resistor name="R_RTC_SCL_PULLUP" resistance="4.7k" footprint="0402" pcbX={16} pcbY={40} />
-    <resistor name="R_RTC_SDA_PULLUP" resistance="4.7k" footprint="0402" pcbX={24} pcbY={40} />
-    <resistor name="R_RTC_INT_PULLUP" resistance="10k" footprint="0402" pcbX={32} pcbY={40} />
-    <resistor name="R_BUFFER_SPI_CLK_PULLUP" resistance="10k" footprint="0402" pcbX={40} pcbY={-40} />
-    <resistor name="R_BUFFER_CS_PULLUP" resistance="10k" footprint="0402" pcbX={48} pcbY={-40} />
-    <resistor name="R_MGMT_ONLINE_INDICATOR" resistance="1k" footprint="0402" pcbX={-60} pcbY={32} />
-    <capacitor name="C_MGMT_ONLINE_FILTER" capacitance="100nF" footprint="0402" pcbX={-52} pcbY={32} />
-    <resistor name="R_MGMT_DEGRADED_INDICATOR" resistance="1k" footprint="0402" pcbX={-44} pcbY={32} />
-    <capacitor name="C_MGMT_DEGRADED_FILTER" capacitance="100nF" footprint="0402" pcbX={-36} pcbY={32} />
-    <resistor name="R_SERVICE_UART_TX_PULLUP" resistance="10k" footprint="0402" pcbX={-28} pcbY={32} />
-    <resistor name="R_SERVICE_UART_RX_PULLUP" resistance="10k" footprint="0402" pcbX={-20} pcbY={32} />
-    <resistor name="R_SERVICE_BOOT_CFG_PULLUP" resistance="10k" footprint="0402" pcbX={-12} pcbY={32} />
-    <capacitor name="C_WATCHDOG_ALERT_FILTER" capacitance="10nF" footprint="0402" pcbX={-4} pcbY={32} />
-
-    <trace from=".C_EVENT_BUFFER_HOLDUP > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".C_EVENT_BUFFER_HOLDUP > .pin2" to="net.GND_LOGIC" />
-    <trace from=".R_SYNC_PENDING_STATUS > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".R_SYNC_PENDING_STATUS > .pin2" to="net.SYNC_PENDING" />
-    <trace from=".C_SYNC_PENDING_FILTER > .pin1" to="net.SYNC_PENDING" />
-    <trace from=".C_SYNC_PENDING_FILTER > .pin2" to="net.GND_LOGIC" />
-    <trace from=".R_MGMT_OFFLINE_STATUS > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".R_MGMT_OFFLINE_STATUS > .pin2" to="net.MGMT_OFFLINE" />
-    <trace from=".C_MGMT_OFFLINE_FILTER > .pin1" to="net.MGMT_OFFLINE" />
-    <trace from=".C_MGMT_OFFLINE_FILTER > .pin2" to="net.GND_LOGIC" />
-    <trace from=".R_RESYNC_ACTIVE_STATUS > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".R_RESYNC_ACTIVE_STATUS > .pin2" to="net.RESYNC_ACTIVE" />
-    <trace from=".C_RESYNC_ACTIVE_FILTER > .pin1" to="net.RESYNC_ACTIVE" />
-    <trace from=".C_RESYNC_ACTIVE_FILTER > .pin2" to="net.GND_LOGIC" />
-    <trace from=".R_POWER_FAIL_WARN_PULLUP > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".R_POWER_FAIL_WARN_PULLUP > .pin2" to="net.POWER_FAIL_WARN" />
-    <trace from=".C_POWER_FAIL_WARN_FILTER > .pin1" to="net.POWER_FAIL_WARN" />
-    <trace from=".C_POWER_FAIL_WARN_FILTER > .pin2" to="net.GND_LOGIC" />
-    <trace from=".R_RTC_SCL_PULLUP > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".R_RTC_SCL_PULLUP > .pin2" to="net.RTC_SCL" />
-    <trace from=".R_RTC_SDA_PULLUP > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".R_RTC_SDA_PULLUP > .pin2" to="net.RTC_SDA" />
-    <trace from=".R_RTC_INT_PULLUP > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".R_RTC_INT_PULLUP > .pin2" to="net.RTC_INT" />
-    <trace from=".R_BUFFER_SPI_CLK_PULLUP > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".R_BUFFER_SPI_CLK_PULLUP > .pin2" to="net.BUFFER_SPI_CLK" />
-    <trace from=".R_BUFFER_CS_PULLUP > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".R_BUFFER_CS_PULLUP > .pin2" to="net.BUFFER_CS" />
-    <trace from=".R_MGMT_ONLINE_INDICATOR > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".R_MGMT_ONLINE_INDICATOR > .pin2" to="net.MGMT_ONLINE" />
-    <trace from=".C_MGMT_ONLINE_FILTER > .pin1" to="net.MGMT_ONLINE" />
-    <trace from=".C_MGMT_ONLINE_FILTER > .pin2" to="net.GND_LOGIC" />
-    <trace from=".R_MGMT_DEGRADED_INDICATOR > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".R_MGMT_DEGRADED_INDICATOR > .pin2" to="net.MGMT_DEGRADED" />
-    <trace from=".C_MGMT_DEGRADED_FILTER > .pin1" to="net.MGMT_DEGRADED" />
-    <trace from=".C_MGMT_DEGRADED_FILTER > .pin2" to="net.GND_LOGIC" />
-    <trace from=".R_SERVICE_UART_TX_PULLUP > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".R_SERVICE_UART_TX_PULLUP > .pin2" to="net.SERVICE_UART_TX" />
-    <trace from=".R_SERVICE_UART_RX_PULLUP > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".R_SERVICE_UART_RX_PULLUP > .pin2" to="net.SERVICE_UART_RX" />
-    <trace from=".R_SERVICE_BOOT_CFG_PULLUP > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".R_SERVICE_BOOT_CFG_PULLUP > .pin2" to="net.SERVICE_BOOT_CFG" />
-    <trace from=".C_WATCHDOG_ALERT_FILTER > .pin1" to="net.WATCHDOG_ALERT" />
-    <trace from=".C_WATCHDOG_ALERT_FILTER > .pin2" to="net.GND_LOGIC" />
   </board>
 )
 

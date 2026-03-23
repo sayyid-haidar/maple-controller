@@ -68,18 +68,18 @@
 
 ### Implementation for User Story 2
 
-- [ ] T020 [P] [US2] Add the approved LAN-entry hardware, PoE ingress boundary, shield treatment, and exact footprint ownership in `src/components/ethernet-poe-front-end.tsx`
-- [ ] T021 [P] [US2] Add Ethernet board-edge keepouts, enclosure-facing notes, and placement constraints for the LAN region in `src/circuits/one-door-controller.tsx`
-- [ ] T022 [P] [US2] Replace placeholder relay-only passives with the approved relay device, coil-drive path, and suppression network in `src/components/relay-lock-output.tsx`
-- [ ] T023 [P] [US2] Align external lock-power sensing, relay-interface nets, and dry-contact boundary metadata with the final physical closure in `src/components/power-domains.tsx` and `src/lib/wiring-contracts.ts`
-- [ ] T024 [US2] Record exact Ethernet and relay part decisions, assembly constraints, and creepage or board-edge rules in `specs/003-fabrication-ready-controller/contracts/hardware-interface-contract.md`
+- [X] T020 [P] [US2] Add the approved LAN-entry hardware, PoE ingress boundary, shield treatment, and exact footprint ownership in `src/components/ethernet-poe-front-end.tsx`
+- [X] T021 [P] [US2] Add Ethernet board-edge keepouts, enclosure-facing notes, and placement constraints for the LAN region in `src/circuits/one-door-controller.tsx`
+- [X] T022 [P] [US2] Replace placeholder relay-only passives with the approved relay device, coil-drive path, and suppression network in `src/components/relay-lock-output.tsx`
+- [X] T023 [P] [US2] Align external lock-power sensing, relay-interface nets, and dry-contact boundary metadata with the final physical closure in `src/components/power-domains.tsx` and `src/lib/wiring-contracts.ts`
+- [X] T024 [US2] Record exact Ethernet and relay part decisions, assembly constraints, and creepage or board-edge rules in `specs/003-fabrication-ready-controller/contracts/hardware-interface-contract.md`
 
 ### Validation for User Story 2 (MANDATORY)
 
-- [ ] T025 [P] [US2] Run `npm run typecheck` for `src/components/ethernet-poe-front-end.tsx`, `src/components/relay-lock-output.tsx`, `src/components/power-domains.tsx`, `src/lib/wiring-contracts.ts`, and `src/circuits/one-door-controller.tsx`
-- [ ] T026 [P] [US2] Run `tsci check netlist` for the Ethernet and relay physical-closure updates rendered from `index.circuit.tsx`
-- [ ] T027 [US2] Run `tsci build` and `tsci snapshot` to capture the final LAN-edge and relay-region implementation from `index.circuit.tsx`
-- [ ] T028 [US2] Run `tsci check placement` for Ethernet connector, relay, terminal-block, and mechanically sensitive placement changes in `src/circuits/one-door-controller.tsx`
+- [X] T025 [P] [US2] Run `npm run typecheck` for `src/components/ethernet-poe-front-end.tsx`, `src/components/relay-lock-output.tsx`, `src/components/power-domains.tsx`, `src/lib/wiring-contracts.ts`, and `src/circuits/one-door-controller.tsx`
+- [X] T026 [P] [US2] Run `tsci check netlist` for the Ethernet and relay physical-closure updates rendered from `index.circuit.tsx`
+- [X] T027 [US2] Run `tsci build` and `tsci snapshot` to capture the final LAN-edge and relay-region implementation from `index.circuit.tsx`
+- [X] T028 [US2] Run `tsci check placement` for Ethernet connector, relay, terminal-block, and mechanically sensitive placement changes in `src/circuits/one-door-controller.tsx`
 
 **Checkpoint**: User Story 2 should independently prove the manufacturable Ethernet and relay implementation choices.
 
@@ -93,18 +93,18 @@
 
 ### Implementation for User Story 3
 
-- [ ] T029 [P] [US3] Add manufacturing-readiness, procurement-readiness, and bring-up verification records for fabrication-critical subsystems in `src/lib/controller-types.ts`
-- [ ] T030 [P] [US3] Add sourcing paths, alternate-part treatment, lifecycle notes, and footprint-review ownership for each fabrication-critical item in `src/lib/wiring-contracts.ts`
-- [ ] T031 [P] [US3] Extend mechanically important Ethernet, relay, service, and terminal components with final CAD model and assembly-suitability metadata in `src/components/ethernet-poe-front-end.tsx`, `src/components/relay-lock-output.tsx`, `src/components/service-connectors.tsx`, and `src/components/supervised-input-bank.tsx`
-- [ ] T032 [US3] Write the manufacturing, procurement, and first-article bring-up package in `specs/003-fabrication-ready-controller/quickstart.md` and `specs/003-fabrication-ready-controller/contracts/fabrication-readiness-contract.md`
-- [ ] T033 [US3] Record critical sourcing risk, accepted alternates, single-source exceptions, and release acceptance criteria in `specs/003-fabrication-ready-controller/plan.md`
+- [X] T029 [P] [US3] Add manufacturing-readiness, procurement-readiness, and bring-up verification records for fabrication-critical subsystems in `src/lib/controller-types.ts`
+- [X] T030 [P] [US3] Add sourcing paths, alternate-part treatment, lifecycle notes, and footprint-review ownership for each fabrication-critical item in `src/lib/wiring-contracts.ts`
+- [X] T031 [P] [US3] Extend mechanically important Ethernet, relay, service, and terminal components with final CAD model and assembly-suitability metadata in `src/components/ethernet-poe-front-end.tsx`, `src/components/relay-lock-output.tsx`, `src/components/service-connectors.tsx`, and `src/components/supervised-input-bank.tsx`
+- [X] T032 [US3] Write the manufacturing, procurement, and first-article bring-up package in `specs/003-fabrication-ready-controller/quickstart.md` and `specs/003-fabrication-ready-controller/contracts/fabrication-readiness-contract.md`
+- [X] T033 [US3] Record critical sourcing risk, accepted alternates, single-source exceptions, and release acceptance criteria in `specs/003-fabrication-ready-controller/plan.md`
 
 ### Validation for User Story 3 (MANDATORY)
 
-- [ ] T034 [P] [US3] Run `npm run typecheck` for `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts`, `src/components/ethernet-poe-front-end.tsx`, `src/components/relay-lock-output.tsx`, `src/components/service-connectors.tsx`, and `src/components/supervised-input-bank.tsx`
-- [ ] T035 [P] [US3] Run `tsci check netlist` for the manufacturing and procurement readiness updates rendered from `index.circuit.tsx`
-- [ ] T036 [US3] Run `tsci build` and `tsci snapshot` to capture the final first-article release package from `index.circuit.tsx`
-- [ ] T037 [US3] Run `tsci check placement` for assembly-sensitive Ethernet, relay, service, and terminal footprints in `src/circuits/one-door-controller.tsx`
+- [X] T034 [P] [US3] Run `npm run typecheck` for `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts`, `src/components/ethernet-poe-front-end.tsx`, `src/components/relay-lock-output.tsx`, `src/components/service-connectors.tsx`, and `src/components/supervised-input-bank.tsx`
+- [X] T035 [P] [US3] Run `tsci check netlist` for the manufacturing and procurement readiness updates rendered from `index.circuit.tsx`
+- [X] T036 [US3] Run `tsci build` and `tsci snapshot` to capture the final first-article release package from `index.circuit.tsx`
+- [X] T037 [US3] Run `tsci check placement` for assembly-sensitive Ethernet, relay, service, and terminal footprints in `src/circuits/one-door-controller.tsx`
 
 **Checkpoint**: User Story 3 should independently prove that the board can be ordered, assembled, and brought up with explicit evidence.
 
@@ -118,17 +118,17 @@
 
 ### Implementation for User Story 4
 
-- [ ] T038 [P] [US4] Reconcile final Ethernet, relay, retention, and connector decisions against the preserved architecture and interface models in `src/lib/controller-types.ts` and `src/lib/wiring-contracts.ts`
-- [ ] T039 [P] [US4] Update subsystem integration so final part lock-in preserves PoE-versus-lock separation, reader mode support, retention behavior, and service isolation in `src/circuits/one-door-controller.tsx`, `src/components/ethernet-poe-front-end.tsx`, `src/components/relay-lock-output.tsx`, `src/components/retention-support.tsx`, and `src/components/service-connectors.tsx`
-- [ ] T040 [US4] Publish the final contract-preservation statements and any explicit scope-change notes in `specs/003-fabrication-ready-controller/contracts/hardware-interface-contract.md` and `specs/003-fabrication-ready-controller/contracts/operational-behavior-contract.md`
-- [ ] T041 [US4] Set the final board release state and explicit blocker handling rules in `src/lib/controller-types.ts` and `specs/003-fabrication-ready-controller/plan.md`
+- [X] T038 [P] [US4] Reconcile final Ethernet, relay, retention, and connector decisions against the preserved architecture and interface models in `src/lib/controller-types.ts` and `src/lib/wiring-contracts.ts`
+- [X] T039 [P] [US4] Update subsystem integration so final part lock-in preserves PoE-versus-lock separation, reader mode support, retention behavior, and service isolation in `src/circuits/one-door-controller.tsx`, `src/components/ethernet-poe-front-end.tsx`, `src/components/relay-lock-output.tsx`, `src/components/retention-support.tsx`, and `src/components/service-connectors.tsx`
+- [X] T040 [US4] Publish the final contract-preservation statements and any explicit scope-change notes in `specs/003-fabrication-ready-controller/contracts/hardware-interface-contract.md` and `specs/003-fabrication-ready-controller/contracts/operational-behavior-contract.md`
+- [X] T041 [US4] Set the final board release state and explicit blocker handling rules in `src/lib/controller-types.ts` and `specs/003-fabrication-ready-controller/plan.md`
 
 ### Validation for User Story 4 (MANDATORY)
 
-- [ ] T042 [P] [US4] Run `npm run typecheck` for `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts`, `src/circuits/one-door-controller.tsx`, `src/components/ethernet-poe-front-end.tsx`, `src/components/relay-lock-output.tsx`, `src/components/retention-support.tsx`, and `src/components/service-connectors.tsx`
-- [ ] T043 [P] [US4] Run `tsci check netlist` for the final fabrication-ready contract-preservation candidate rendered from `index.circuit.tsx`
-- [ ] T044 [US4] Run `tsci build` and `tsci snapshot` to capture the fully reconciled fabrication-ready candidate from `index.circuit.tsx`
-- [ ] T045 [US4] Run `tsci check placement` for the final Ethernet, relay, retention, service, and installer-interface placement state in `src/circuits/one-door-controller.tsx`
+- [X] T042 [P] [US4] Run `npm run typecheck` for `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts`, `src/circuits/one-door-controller.tsx`, `src/components/ethernet-poe-front-end.tsx`, `src/components/relay-lock-output.tsx`, `src/components/retention-support.tsx`, and `src/components/service-connectors.tsx`
+- [X] T043 [P] [US4] Run `tsci check netlist` for the final fabrication-ready contract-preservation candidate rendered from `index.circuit.tsx`
+- [X] T044 [US4] Run `tsci build` and `tsci snapshot` to capture the fully reconciled fabrication-ready candidate from `index.circuit.tsx`
+- [X] T045 [US4] Run `tsci check placement` for the final Ethernet, relay, retention, service, and installer-interface placement state in `src/circuits/one-door-controller.tsx`
 
 **Checkpoint**: User Story 4 should independently prove that fabrication closure preserved the accepted controller contracts.
 
@@ -138,9 +138,9 @@
 
 **Purpose**: Remove stale review-ready assumptions, finalize handoff artifacts, and run full-project validation for the fabrication-ready candidate.
 
-- [ ] T046 [P] Review component consistency and remove stale review-ready or placeholder wording across `src/components/*.tsx`, `src/lib/*.ts`, and `src/circuits/one-door-controller.tsx`
-- [ ] T047 [P] Finalize the feature handoff, artifact locations, blocker summary, and release workflow in `specs/003-fabrication-ready-controller/quickstart.md` and `specs/003-fabrication-ready-controller/plan.md`
-- [ ] T048 Re-run `npm run typecheck`, `tsci check netlist`, `tsci build`, `tsci snapshot`, and `tsci check placement` for the complete fabrication-ready candidate rendered from `index.circuit.tsx`
+- [X] T046 [P] Review component consistency and remove stale review-ready or placeholder wording across `src/components/*.tsx`, `src/lib/*.ts`, and `src/circuits/one-door-controller.tsx`
+- [X] T047 [P] Finalize the feature handoff, artifact locations, blocker summary, and release workflow in `specs/003-fabrication-ready-controller/quickstart.md` and `specs/003-fabrication-ready-controller/plan.md`
+- [X] T048 Re-run `npm run typecheck`, `tsci check netlist`, `tsci build`, `tsci snapshot`, and `tsci check placement` for the complete fabrication-ready candidate rendered from `index.circuit.tsx`
 
 ---
 

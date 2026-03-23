@@ -1,3 +1,5 @@
+import { KICAD_STEP_MODELS } from "../lib/cad-models"
+
 type PlacementProps = {
   pcbX?: number
   pcbY?: number
@@ -7,6 +9,7 @@ export const READER_CONNECTOR_RELEASE = {
   osdpTerminalPart: "Phoenix Contact MC 1,5/4-G-3,81",
   wiegandTerminalPart: "Phoenix Contact MC 1,5/4-G-3,81",
   placementBoundary: "installer-facing field terminals remain separate from service and controller-core circuitry",
+  cadModelStatus: "present",
 } as const
 
 // MAX3485ESA+T SOIC-8 pinout (Analog Devices datasheet):
@@ -33,62 +36,72 @@ const rs485ProtectionPinLabels = {
 
 export const ReaderInterfaces = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
   <group pcbX={pcbX} pcbY={pcbY}>
+    {/* Terminal blocks face +Y (top board edge for installer cable entry) — side by side */}
     <chip
       name="J_OSDP_TB"
       footprint="kicad:Connector_Phoenix_MC/PhoenixContact_MC_1,5_4-G-3.81_1x04_P3.81mm_Horizontal"
+      cadModel={{ stepUrl: KICAD_STEP_MODELS.phoenix_mc_1_5_4_g_3_81_horizontal }}
       supplierPartNumbers={{ digikey: [READER_CONNECTOR_RELEASE.osdpTerminalPart] }}
-      pcbX={-28}
-      pcbY={-12}
+      pcbX={-10}
+      pcbY={14}
       pinLabels={{ pin1: "OSDP_A", pin2: "OSDP_B", pin3: "FIELD_12V", pin4: "FIELD_GND" }}
     />
     <chip
       name="J_WIEGAND_TB"
       footprint="kicad:Connector_Phoenix_MC/PhoenixContact_MC_1,5_4-G-3.81_1x04_P3.81mm_Horizontal"
+      cadModel={{ stepUrl: KICAD_STEP_MODELS.phoenix_mc_1_5_4_g_3_81_horizontal }}
       supplierPartNumbers={{ digikey: [READER_CONNECTOR_RELEASE.wiegandTerminalPart] }}
-      pcbX={-28}
-      pcbY={8}
+      pcbX={10}
+      pcbY={14}
       pinLabels={{ pin1: "W0_D0", pin2: "W1_D1", pin3: "LED_CTRL", pin4: "BEEP_CTRL" }}
     />
-    <chip
-      name="U_OSDP_XCVR"
-      footprint="kicad:Package_SO/SOIC-8_3.9x4.9mm_P1.27mm"
-      supplierPartNumbers={{ lcsc: ["C122806"] }}
-      pcbX={0}
-      pcbY={-12}
-      pinLabels={rs485TransceiverPinLabels}
-      pinAttributes={{
-        VCC: { requiresPower: true },
-        GND: { requiresGround: true },
-      }}
-    />
+    {/* ESD protection — between terminals and transceiver */}
     <chip
       name="U_OSDP_PROTECT"
       footprint="kicad:Package_TO_SOT_SMD/SOT-23-6"
+      cadModel={{ stepUrl: KICAD_STEP_MODELS.sot_23_6 }}
       supplierPartNumbers={{ lcsc: ["C2842"] }}
-      pcbX={8}
-      pcbY={-20}
+      pcbX={-10}
+      pcbY={4}
       pinLabels={rs485ProtectionPinLabels}
       pinAttributes={{
         VCC: { requiresPower: true },
         GND: { requiresGround: true },
       }}
     />
-    <capacitor name="C_OSDP_XCVR_VDD" capacitance="100nF" footprint="0402" pcbX={-10} pcbY={-12} />
-    <resistor name="R_OSDP_A_TERM" resistance="120ohm" footprint="0402" pcbX={0} pcbY={0} />
-    <resistor name="R_WIEGAND_D0_PULLUP" resistance="10k" footprint="0402" pcbX={8} pcbY={0} />
-    <resistor name="R_WIEGAND_D1_PULLUP" resistance="10k" footprint="0402" pcbX={16} pcbY={0} />
-    <capacitor name="C_READER_FIELD_FILTER" capacitance="100nF" footprint="0402" pcbX={24} pcbY={0} />
-    <resistor name="R_READER_AUX_PTC" resistance="1ohm" footprint="0603" pcbX={32} pcbY={0} />
-    <resistor name="R_OSDP_A_BIAS" resistance="1k" footprint="0402" pcbX={0} pcbY={8} />
-    <resistor name="R_OSDP_B_BIAS" resistance="1k" footprint="0402" pcbX={8} pcbY={8} />
-    <resistor name="R_OSDP_DE_PULLDOWN" resistance="10k" footprint="0402" pcbX={16} pcbY={8} />
-    <resistor name="R_OSDP_RE_PULLDOWN" resistance="10k" footprint="0402" pcbX={24} pcbY={8} />
-    <capacitor name="C_WIEGAND_D0_FILTER" capacitance="10nF" footprint="0402" pcbX={32} pcbY={8} />
-    <capacitor name="C_WIEGAND_D1_FILTER" capacitance="10nF" footprint="0402" pcbX={40} pcbY={8} />
-    <resistor name="R_WIEGAND_LED_PULLUP" resistance="10k" footprint="0402" pcbX={32} pcbY={24} />
-    <resistor name="R_WIEGAND_BEEP_PULLUP" resistance="10k" footprint="0402" pcbX={40} pcbY={24} />
-    <capacitor name="C_OSDP_A_FILTER" capacitance="10nF" footprint="0402" pcbX={0} pcbY={16} />
-    <capacitor name="C_OSDP_B_FILTER" capacitance="10nF" footprint="0402" pcbX={8} pcbY={16} />
+    {/* RS-485 transceiver — logic side, below protection */}
+    <chip
+      name="U_OSDP_XCVR"
+      footprint="kicad:Package_SO/SOIC-8_3.9x4.9mm_P1.27mm"
+      cadModel={{ stepUrl: KICAD_STEP_MODELS.soic8_39x49_p127 }}
+      supplierPartNumbers={{ lcsc: ["C122806"] }}
+      pcbX={-10}
+      pcbY={-8}
+      pinLabels={rs485TransceiverPinLabels}
+      pinAttributes={{
+        VCC: { requiresPower: true },
+        GND: { requiresGround: true },
+      }}
+    />
+    <capacitor name="C_OSDP_XCVR_VDD" capacitance="100nF" footprint="0402" pcbX={-20} pcbY={-8} />
+    {/* RS-485 termination and bias — near transceiver */}
+    <resistor name="R_OSDP_A_TERM" resistance="120ohm" footprint="0402" pcbX={2} pcbY={-4} />
+    <resistor name="R_OSDP_A_BIAS" resistance="1k" footprint="0402" pcbX={2} pcbY={-12} />
+    <resistor name="R_OSDP_B_BIAS" resistance="1k" footprint="0402" pcbX={12} pcbY={-12} />
+    <resistor name="R_OSDP_DE_PULLDOWN" resistance="10k" footprint="0402" pcbX={-20} pcbY={-16} />
+    <resistor name="R_OSDP_RE_PULLDOWN" resistance="10k" footprint="0402" pcbX={-10} pcbY={-16} />
+    <capacitor name="C_OSDP_A_FILTER" capacitance="10nF" footprint="0402" pcbX={2} pcbY={4} />
+    <capacitor name="C_OSDP_B_FILTER" capacitance="10nF" footprint="0402" pcbX={12} pcbY={4} />
+    {/* Wiegand support — near Wiegand terminal */}
+    <resistor name="R_WIEGAND_D0_PULLUP" resistance="10k" footprint="0402" pcbX={10} pcbY={0} />
+    <resistor name="R_WIEGAND_D1_PULLUP" resistance="10k" footprint="0402" pcbX={20} pcbY={0} />
+    <capacitor name="C_WIEGAND_D0_FILTER" capacitance="10nF" footprint="0402" pcbX={10} pcbY={-8} />
+    <capacitor name="C_WIEGAND_D1_FILTER" capacitance="10nF" footprint="0402" pcbX={20} pcbY={-8} />
+    <resistor name="R_WIEGAND_LED_PULLUP" resistance="10k" footprint="0402" pcbX={10} pcbY={-16} />
+    <resistor name="R_WIEGAND_BEEP_PULLUP" resistance="10k" footprint="0402" pcbX={20} pcbY={-16} />
+    {/* Field power filtering */}
+    <capacitor name="C_READER_FIELD_FILTER" capacitance="100nF" footprint="0402" pcbX={22} pcbY={4} />
+    <resistor name="R_READER_AUX_PTC" resistance="1ohm" footprint="0603" pcbX={22} pcbY={-4} />
 
     <trace from=".U_OSDP_XCVR > .VCC" to="net.V3_3_LOGIC" />
     <trace from=".U_OSDP_XCVR > .GND" to="net.GND_LOGIC" />

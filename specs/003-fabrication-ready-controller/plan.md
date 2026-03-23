@@ -48,10 +48,10 @@ tracks the board as `fabrication-blocked` until the following blockers are close
 
 | Blocker key | Current state | Owner | Owning files | Closure criteria |
 | ----------- | ------------- | ----- | ------------ | ---------------- |
-| `ethernet_magjack` | open | LAN entry review | `src/components/ethernet-poe-front-end.tsx`, `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts` | exact PoE-capable LAN entry part, footprint, shield treatment, and board-edge assumptions approved |
-| `ethernet_poe_entry_boundary` | open | LAN entry review | `src/components/ethernet-poe-front-end.tsx`, `src/circuits/one-door-controller.tsx` | PoE ingress, center-tap treatment, and board-edge placement constraints documented and validated |
-| `lock_relay` | open | lock-interface review | `src/components/relay-lock-output.tsx`, `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts` | exact relay package, contact rating, and footprint approved |
-| `lock_relay_drive` | open | lock-interface review | `src/components/relay-lock-output.tsx`, `src/components/power-domains.tsx` | coil-drive path and suppression network implemented and validated |
+| `ethernet_magjack` | closed | LAN entry review | `src/components/ethernet-poe-front-end.tsx`, `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts` | released as Abracon `ARJP11A-MA` on the KiCad `RJ45_Abracon_ARJP11A-MA_Horizontal` footprint |
+| `ethernet_poe_entry_boundary` | closed | LAN entry review | `src/components/ethernet-poe-front-end.tsx`, `src/circuits/one-door-controller.tsx` | PoE taps, shield bond, and LAN-edge placement notes are now encoded in source |
+| `lock_relay` | closed | lock-interface review | `src/components/relay-lock-output.tsx`, `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts` | released as Omron `G5LE-1-DC12` on the KiCad `Relay_SPDT_Omron-G5LE-1` footprint |
+| `lock_relay_drive` | closed | lock-interface review | `src/components/relay-lock-output.tsx`, `src/components/power-domains.tsx` | PB10 low-side drive, flyback path, and dry-contact metadata are now encoded in source |
 | `rtc_backup_source` | open | retention review | `src/components/retention-support.tsx`, `src/lib/controller-types.ts` | backup-source topology promoted from hold-up capacitor placeholder to approved part or justified blocker |
 
 All other fabrication-critical items must resolve to explicit `approved` or
@@ -76,13 +76,10 @@ allowed once 003 lands.
 
 ## Current Implementation Delta
 
-- `src/components/ethernet-poe-front-end.tsx` defines a PHY and Ethernet-side
-  placeholder passives, but it still lacks the actual approved magjack or
-  connector-plus-magnetics element, shield strategy, and fabrication notes that
-  would make LAN entry manufacturable.
-- `src/components/relay-lock-output.tsx` reserves terminal blocks and passive
-  placeholders, but it does not yet model the approved relay device, coil drive,
-  creepage-sensitive placement assumptions, or final suppression strategy.
+- `src/components/ethernet-poe-front-end.tsx` now carries the released magjack,
+  explicit PoE taps, shield-bond treatment, and PHY-side series links for the LAN edge.
+- `src/components/relay-lock-output.tsx` now carries the released relay device,
+  PB10-driven low-side coil path, flyback suppression, and installer-edge relay corridor.
 - `src/components/retention-support.tsx` already names candidate RTC and FRAM
   devices, but backup-source implementation and the board-level event-buffer
   placeholder in `src/circuits/one-door-controller.tsx` still prevent closure.
@@ -167,8 +164,29 @@ the current modules.
   terminal series and pin counts are explicit and placement remains installer-facing.
 - RTC and FRAM devices: may be approved if the exact parts remain aligned with
   the retention package and no board-level placeholders remain for the devices themselves.
-- Ethernet entry, PoE ingress boundary, relay device, relay drive, and RTC backup
-  source remain release blockers until the physical implementation is fully defined.
+- Ethernet entry, PoE ingress boundary, relay device, and relay drive are now
+  released; RTC backup source remains the final explicit blocker in this workstream.
+
+## Procurement Risk Register
+
+| Part | Status | Source path | Alternate treatment | Release impact |
+| ---- | ------ | ----------- | ------------------- | -------------- |
+| Abracon `ARJP11A-MA` | approved | Abracon distribution | no alternate until body and shield geometry are revalidated | acceptable single-source exception |
+| Omron `G5LE-1-DC12` | approved | Digikey Omron distribution | no alternate until drill pattern and body envelope match | acceptable single-source exception |
+| Harwin `M50-3500542` | approved | Harwin M50 series | pin-compatible alternates allowed with identical height and pitch | low risk |
+| Phoenix Contact installer terminals | approved | Phoenix Contact MC/MKDS distribution | pitch- and entry-compatible alternates only | low risk |
+| RTC backup source | blocked | none | none | blocks fabrication-ready release |
+
+Release acceptance for 003 remains `fabrication-blocked` until the RTC backup
+source moves from open blocker to approved or explicitly bounded retention policy.
+
+## Final Blocker Handling Rule
+
+- Remaining blocker list for the current candidate: `rtc_backup_source` only.
+- If that blocker remains open, the board state must stay `fabrication-blocked`
+  even when Ethernet, relay, sourcing, assembly, and bring-up packages are complete.
+- No other subsystem may be re-opened unless a new blocker is added explicitly to
+  the typed release ledger and mirrored into the feature artifacts.
 
 ## Evidence Ownership
 

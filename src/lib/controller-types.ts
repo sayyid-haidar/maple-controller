@@ -260,6 +260,12 @@ export interface BringUpVerificationPackageModel {
   serviceChecks: string[]
 }
 
+export interface ReleaseBlockerPolicyModel {
+  remainingBlockers: string[]
+  clearanceRule: string
+  scopeChangeRule: string
+}
+
 export interface ControllerBoardModel {
   boardName: string
   boardOutline: { width: string; height: string }
@@ -283,6 +289,7 @@ export interface ControllerBoardModel {
   manufacturingReadiness: ManufacturingReadinessPackageModel
   procurementReadiness: ProcurementReadinessPackageModel
   bringUpVerification: BringUpVerificationPackageModel
+  releaseBlockerPolicy: ReleaseBlockerPolicyModel
   retentionClosure: RetentionClosureModel
   timekeeping: TimekeepingModel
   eventBuffer: EventBufferModel
@@ -304,7 +311,7 @@ export const controllerBoardModel: ControllerBoardModel = {
       "bring-up package",
       "validated circuit artifacts",
     ],
-    blockingPartKeys: ["ethernet_magjack", "ethernet_poe_entry_boundary", "lock_relay", "lock_relay_drive", "rtc_backup_source"],
+    blockingPartKeys: ["rtc_backup_source"],
     status: "blocked",
   },
   managementModel: "centralized-with-local-fallback",
@@ -395,8 +402,8 @@ export const controllerBoardModel: ControllerBoardModel = {
     relayType: "dry_form_c",
     supportedExternalVoltages: ["12V", "24V"],
     supportedPolicies: ["fail-safe", "fail-secure"],
-    contactRating: "relay footprint and rating remain blocked until the final dry-contact device is approved",
-    suppressionStrategy: ["flyback path", "field-side transient suppression"],
+    contactRating: "Omron G5LE-1-DC12 Form-C dry contact, 10 A class footprint for installer-supplied lock power",
+    suppressionStrategy: ["low-side coil drive with flyback diode", "field-side transient damping on the contact boundary"],
   },
   managementLink: {
     transport: "ethernet_10_100",
@@ -437,10 +444,10 @@ export const controllerBoardModel: ControllerBoardModel = {
     {
       interfaceName: "ethernet_poe_rj45",
       connectorFamily: "shielded_rj45_magjack",
-      exactPart: "PoE-capable integrated magjack TBD",
+      exactPart: "Abracon ARJP11A-MA",
       pinCount: 8,
-      readiness: "blocked",
-      notes: "Integrated magnetics boundary remains explicit for 10/100 LAN entry, but the exact PoE-capable part and board-edge treatment are still open blockers",
+      readiness: "approved",
+      notes: "Integrated 10/100 magjack with PoE taps stays fixed to the left board edge with explicit shield and V48 entry treatment",
       sourceOfTruthFile: "src/components/ethernet-poe-front-end.tsx",
     },
     {
@@ -458,7 +465,7 @@ export const controllerBoardModel: ControllerBoardModel = {
       exactPart: "Phoenix Contact MKDS 1,5/3-5,08",
       pinCount: 3,
       readiness: "approved",
-      notes: "Field relay contacts remain on the same approved installer terminal family even though the relay device itself is still blocked",
+      notes: "Field relay contacts remain on the approved installer terminal family and are now backed by the released Omron dry-contact relay implementation",
       sourceOfTruthFile: "src/components/relay-lock-output.tsx",
     },
     {
@@ -553,7 +560,7 @@ export const controllerBoardModel: ControllerBoardModel = {
         approvedAlternates: [],
         lifecycleStatus: "active",
         assemblySuitability: "THT field terminal compatible with installer-side service access spacing",
-        cadModelStatus: "missing_blocker",
+        cadModelStatus: "present",
       },
     },
     {
@@ -572,7 +579,7 @@ export const controllerBoardModel: ControllerBoardModel = {
         approvedAlternates: [],
         lifecycleStatus: "active",
         assemblySuitability: "THT field terminal compatible with installer-side cable entry",
-        cadModelStatus: "missing_blocker",
+        cadModelStatus: "present",
       },
     },
     {
@@ -616,73 +623,77 @@ export const controllerBoardModel: ControllerBoardModel = {
     {
       partKey: "ethernet_magjack",
       subsystem: "ethernet",
-      status: "blocked",
+      status: "approved",
       electricalRole: "board-edge 10/100 Ethernet entry with PoE-capable magnetics and shield treatment",
       package: "integrated magjack",
-      footprint: "TBD board-edge magjack footprint",
+      footprint: "kicad:Connector_RJ/RJ45_Abracon_ARJP11A-MA_Horizontal",
       sourceOfTruthFile: "src/components/ethernet-poe-front-end.tsx",
       requiresAlternate: true,
-      blocker: {
-        blockerName: "Exact LAN entry not yet approved",
-        appliesTo: "Ethernet board-edge hardware",
-        reason: "The PHY is selected, but the PoE-capable magjack, shield treatment, and final board-edge footprint are not yet locked",
-        closureCriteria: "Approve one PoE-capable LAN entry implementation with exact footprint, shield strategy, and sourcing path",
-        owner: "LAN entry review",
-        impactArea: "mechanical",
+      approvedBomLine: {
+        manufacturer: "Abracon",
+        manufacturerPartNumber: "ARJP11A-MA",
+        supplierPaths: ["Abracon ARJP11A distribution", "KiCad Connector_RJ released footprint"],
+        approvedAlternates: [],
+        lifecycleStatus: "unknown",
+        assemblySuitability: "through-hole board-edge magjack with released KiCad body model and shield-tab review visibility",
+        cadModelStatus: "present",
       },
     },
     {
       partKey: "ethernet_poe_entry_boundary",
       subsystem: "ethernet",
-      status: "blocked",
+      status: "approved",
       electricalRole: "PoE ingress and center-tap treatment between LAN entry and PD front end",
       package: "connector-adjacent support network",
-      footprint: "TBD until LAN entry is approved",
+      footprint: "0402 pull-up, shield-bleed, and RC bond network adjacent to the released LAN entry",
       sourceOfTruthFile: "src/components/ethernet-poe-front-end.tsx",
       requiresAlternate: false,
-      blocker: {
-        blockerName: "PoE ingress boundary unresolved",
-        appliesTo: "Ethernet PoE entry support parts",
-        reason: "The final LAN entry part determines center-tap routing, PoE extraction, and protection ownership",
-        closureCriteria: "Approve the LAN entry hardware and implement the final PoE ingress network around it",
-        owner: "LAN entry review",
-        impactArea: "verification",
+      approvedBomLine: {
+        manufacturer: "controller-local discrete network",
+        manufacturerPartNumber: "ETH shield bleed and PoE entry passives",
+        supplierPaths: ["0402 passive assembly path at LAN edge"],
+        approvedAlternates: [],
+        lifecycleStatus: "active",
+        assemblySuitability: "standard SMT LAN-edge support network tied directly to the released magjack footprint",
+        cadModelStatus: "not_required",
       },
     },
     {
       partKey: "lock_relay",
       subsystem: "relay",
-      status: "blocked",
+      status: "approved",
       electricalRole: "dry-contact switching device for installer-supplied lock power",
       package: "SPDT relay",
-      footprint: "TBD final relay footprint",
+      footprint: "kicad:Relay_THT/Relay_SPDT_Omron-G5LE-1",
       sourceOfTruthFile: "src/components/relay-lock-output.tsx",
       requiresAlternate: true,
-      blocker: {
-        blockerName: "Exact relay package not yet approved",
-        appliesTo: "Lock relay device",
-        reason: "Field terminals exist, but the electromechanical relay body, contact rating, and assembly constraints are still unresolved",
-        closureCriteria: "Approve one relay device with exact package, rating, and placement assumptions",
-        owner: "lock-interface review",
-        impactArea: "assembly",
+      approvedBomLine: {
+        manufacturer: "Omron",
+        manufacturerPartNumber: "G5LE-1-DC12",
+        supplierPaths: ["Digikey Omron relay distribution", "KiCad Relay_THT released footprint"],
+        approvedAlternates: [],
+        lifecycleStatus: "active",
+        assemblySuitability: "through-hole relay with released KiCad body model and installer-edge clearance review",
+        cadModelStatus: "present",
       },
     },
     {
       partKey: "lock_relay_drive",
       subsystem: "relay",
-      status: "blocked",
+      status: "approved",
       electricalRole: "coil-drive and suppression path for the final relay device",
       package: "transistor and suppression support network",
-      footprint: "TBD final relay support footprints",
+      footprint: "SOT-23 low-side driver plus SOD-123 flyback network",
       sourceOfTruthFile: "src/components/relay-lock-output.tsx",
       requiresAlternate: false,
-      blocker: {
-        blockerName: "Relay drive path unresolved",
-        appliesTo: "Relay coil drive and suppression network",
-        reason: "The current passive-only placeholder path does not yet implement the real relay coil or suppression network",
-        closureCriteria: "Implement the final coil-drive path and suppression network tied to the approved relay device",
-        owner: "lock-interface review",
-        impactArea: "verification",
+      approvedBomLine: {
+        manufacturer: "controller-local discrete network",
+        manufacturerPartNumber: "MMBT2222A plus B5819W drive path",
+        supplierPaths: ["SOT-23 and SOD-123 assembly path"],
+        approvedAlternates: [],
+        lifecycleStatus: "active",
+        assemblySuitability: "standard SMT driver and flyback parts kept on the logic side of the relay boundary",
+        cadModelStatus: "not_required",
       },
     },
     {
@@ -705,43 +716,49 @@ export const controllerBoardModel: ControllerBoardModel = {
     },
   ],
   manufacturingReadiness: {
-    assemblyMethod: "mixed SMT plus through-hole assembly for terminals and service header",
+    assemblyMethod: "mixed SMT reflow plus selective-solder assembly for the LAN magjack, service header, field terminals, and Omron relay",
     criticalFootprintReviews: [
-      "LAN entry footprint",
-      "relay body footprint",
+      "Abracon ARJP11A-MA LAN entry footprint",
+      "Omron G5LE-1 relay footprint",
       "5.08 mm lock terminals",
       "3.81 mm reader and supervised-input terminals",
       "service header footprint",
     ],
     boardEdgeChecks: [
-      "LAN connector overhang and keepout",
+      "LAN connector overhang and shield keepout",
+      "relay body height versus enclosure floor and cover",
       "service header access clearance",
       "terminal entry orientation",
     ],
     handlingConstraints: [
+      "verify magjack shield-tab solder fillets and front-edge enclosure clearance",
       "review tall connector and relay body heights against enclosure",
+      "keep relay drive transistors and low-voltage routing on the logic side of the dry-contact corridor",
       "maintain service-access clearance from installer wiring",
     ],
     placementValidationRequired: true,
   },
   procurementReadiness: {
-    criticalPartCoverage: "service, connector, MCU, RTC, and FRAM decisions approved; Ethernet entry, relay, and RTC backup source still blocked",
-    alternatePolicy: "Critical electromechanical parts require an explicit alternate or a justified single-source exception",
-    lifecycleReviewPolicy: "Record lifecycle risk on every fabrication-critical part before clearing the release gate",
-    singleSourceExceptions: ["STM32F407VET6", "DS3231MZ+", "MB85RS256A"],
+    criticalPartCoverage: "service, connector, MCU, RTC, FRAM, Ethernet LAN entry, and relay decisions approved; RTC backup source remains blocked",
+    alternatePolicy: "Critical electromechanical parts require a geometry-matched alternate, otherwise they remain justified single-source exceptions",
+    lifecycleReviewPolicy: "Record lifecycle risk and source path on every fabrication-critical part before clearing the release gate",
+    singleSourceExceptions: ["STM32F407VET6", "DS3231MZ+", "MB85RS256A", "Abracon ARJP11A-MA", "Omron G5LE-1-DC12"],
     releaseDecision: "blocked",
   },
   bringUpVerification: {
     powerChecks: [
       "Verify PoE intake to intermediate rails and 3.3 V logic regulation",
+      "Verify the released LAN-entry PoE taps deliver stable V48 input before PD conversion",
       "Verify reader auxiliary rail and field-return behavior",
     ],
     ethernetChecks: [
       "Verify PHY power, reset, and reference clock behavior",
-      "Verify LAN link and PoE ingress only after the final board-edge entry is approved",
+      "Verify shield RC bond stays isolated from installer field returns",
+      "Verify LAN link and PoE ingress through the released ARJP11A-MA board-edge entry",
     ],
     relayChecks: [
-      "Verify final relay actuation, coil suppression, and contact continuity once the relay implementation is approved",
+      "Verify PB10 relay drive, low-side transistor saturation, flyback behavior, and COM/NO/NC continuity on the released relay path",
+      "Verify the relay coil never backfeeds the installer lock domain",
     ],
     readerChecks: [
       "Verify OSDP continuity on A/B plus reader auxiliary power",
@@ -754,7 +771,13 @@ export const controllerBoardModel: ControllerBoardModel = {
     ],
     serviceChecks: [
       "Verify SWD access, UART console, reset, boot strap, and watchdog visibility",
+      "Verify the service header remains accessible without crossing the LAN or installer cable-entry corridor",
     ],
+  },
+  releaseBlockerPolicy: {
+    remainingBlockers: ["rtc_backup_source"],
+    clearanceRule: "The board stays fabrication-blocked until the remaining blocker list is empty and the typed and document release packages match.",
+    scopeChangeRule: "Any removal of Ethernet, reader, relay, retention, or service behavior requires an explicit contract update rather than an implicit part-substitution side effect.",
   },
   retentionClosure: {
     rtcPartStatus: "approved",
