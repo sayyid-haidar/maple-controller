@@ -1,5 +1,12 @@
 import { KICAD_STEP_MODELS } from "../lib/cad-models"
 
+export const RETENTION_RELEASE = {
+  rtcPart: "DS3231MZ+",
+  framPart: "MB85RS256A",
+  backupSupportStatus: "blocked pending approved long-duration backup source",
+  localHoldUpCapacitance: "1uF",
+} as const
+
 type PlacementProps = {
   pcbX?: number
   pcbY?: number
@@ -62,7 +69,7 @@ export const RetentionSupport = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     />
     <capacitor name="C_RTC_VDD" capacitance="100nF" footprint="0402" pcbX={0} pcbY={10} />
     <capacitor name="C_FRAM_VDD" capacitance="100nF" footprint="0402" pcbX={16} pcbY={10} />
-    <capacitor name="C_RTC_BACKUP" capacitance="1uF" footprint="0603" pcbX={-10} pcbY={0} />
+    <capacitor name="C_RTC_BACKUP_HOLDUP" capacitance={RETENTION_RELEASE.localHoldUpCapacitance} footprint="0603" pcbX={-10} pcbY={0} />
 
     <trace from=".U_RTC > .RTC_INT" to="net.RTC_INT" />
     <trace from=".U_RTC > .RST" to="net.V3_3_LOGIC" />{/* internal 50kΩ pullup; tie to VCC */}
@@ -83,7 +90,7 @@ export const RetentionSupport = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <trace from=".C_RTC_VDD > .pin2" to="net.GND_LOGIC" />
     <trace from=".C_FRAM_VDD > .pin1" to="net.V3_3_LOGIC" />
     <trace from=".C_FRAM_VDD > .pin2" to="net.GND_LOGIC" />
-    <trace from=".C_RTC_BACKUP > .pin1" to="net.VBAT_RTC" />
-    <trace from=".C_RTC_BACKUP > .pin2" to="net.GND_LOGIC" />
+    <trace from=".C_RTC_BACKUP_HOLDUP > .pin1" to="net.VBAT_RTC" />
+    <trace from=".C_RTC_BACKUP_HOLDUP > .pin2" to="net.GND_LOGIC" />
   </group>
 )

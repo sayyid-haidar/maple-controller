@@ -3,6 +3,11 @@ type PlacementProps = {
   pcbY?: number
 }
 
+export const SUPERVISED_INPUT_CONNECTOR_RELEASE = {
+  exactPart: "Phoenix Contact MC 1,5/4-G-3,81",
+  usageBoundary: "installer-facing low-current supervised loops only",
+} as const
+
 const entryInputTerminalPinLabels = {
   pin1: "DOOR_CONTACT",
   pin2: "REX_INPUT",
@@ -19,8 +24,8 @@ const statusInputTerminalPinLabels = {
 
 export const SupervisedInputBank = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
   <group pcbX={pcbX} pcbY={pcbY}>
-    <chip name="J_ENTRY_INPUTS_TB" footprint="kicad:Connector_Phoenix_MC/PhoenixContact_MC_1,5_4-G-3.81_1x04_P3.81mm_Horizontal" pcbX={-20} pcbY={-16} pinLabels={entryInputTerminalPinLabels} />
-    <chip name="J_STATUS_INPUTS_TB" footprint="kicad:Connector_Phoenix_MC/PhoenixContact_MC_1,5_4-G-3.81_1x04_P3.81mm_Horizontal" pcbX={0} pcbY={-16} pinLabels={statusInputTerminalPinLabels} />
+    <chip name="J_ENTRY_INPUTS_TB" footprint="kicad:Connector_Phoenix_MC/PhoenixContact_MC_1,5_4-G-3.81_1x04_P3.81mm_Horizontal" supplierPartNumbers={{ digikey: [SUPERVISED_INPUT_CONNECTOR_RELEASE.exactPart] }} pcbX={-20} pcbY={-16} pinLabels={entryInputTerminalPinLabels} />
+    <chip name="J_STATUS_INPUTS_TB" footprint="kicad:Connector_Phoenix_MC/PhoenixContact_MC_1,5_4-G-3.81_1x04_P3.81mm_Horizontal" supplierPartNumbers={{ digikey: [SUPERVISED_INPUT_CONNECTOR_RELEASE.exactPart] }} pcbX={0} pcbY={-16} pinLabels={statusInputTerminalPinLabels} />
     <resistor name="R_DOOR_CONTACT_PULLUP" resistance="10k" footprint="0402" pcbX={0} pcbY={0} />
     <resistor name="R_REX_PULLUP" resistance="10k" footprint="0402" pcbX={8} pcbY={0} />
     <resistor name="R_TAMPER_PULLUP" resistance="10k" footprint="0402" pcbX={16} pcbY={0} />

@@ -1,5 +1,12 @@
 import { KICAD_STEP_MODELS } from "../lib/cad-models"
 
+export const SERVICE_CONNECTOR_RELEASE = {
+  interfaceName: "service_debug",
+  exactPart: "Harwin M50-3500542",
+  approvedUsage: "factory programming, SWD recovery, UART console, reset, and boot-strap access",
+  sourcingPath: "Harwin M50 series compatible 2x05 1.27 mm vertical header",
+} as const
+
 type PlacementProps = {
   pcbX?: number
   pcbY?: number
@@ -24,6 +31,7 @@ export const ServiceConnectors = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
       name="J_SERVICE"
       footprint="kicad:Connector_PinHeader_1.27mm/PinHeader_2x05_P1.27mm_Vertical"
       cadModel={{ stepUrl: KICAD_STEP_MODELS.pinHeader2x05_p127 }}
+      supplierPartNumbers={{ digikey: [SERVICE_CONNECTOR_RELEASE.exactPart] }}
       pcbX={0}
       pcbY={0}
       pinLabels={servicePinLabels}

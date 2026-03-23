@@ -13,6 +13,8 @@ treated as ready for first-article fabrication.
   intended footprint, electrical role, sourcing path, and alternate-part policy.
 - No family-only, placeholder, or implied part decisions may remain hidden in
   source files once fabrication-ready status is claimed.
+- Each blocked item must identify an owner, impact area, closure criteria, and
+  the file that still carries the unresolved implementation.
 
 ## Footprint and Assembly Contract
 
@@ -22,6 +24,8 @@ treated as ready for first-article fabrication.
   placement and access expectations where assembly or enclosure fit depends on them.
 - `tsci check placement` is mandatory for any revision that changes critical
   footprints, board-edge parts, or placement spacing.
+- Mechanically significant parts must either carry a released CAD model or a
+  named `missing_blocker` entry in the fabrication ledger.
 
 ## Procurement Contract
 
@@ -30,6 +34,8 @@ treated as ready for first-article fabrication.
 - Alternate-compatible parts must be identified where practical; if no alternate
   exists, the part must be called out as a justified single-source exception.
 - Sourcing uncertainty that materially threatens ordering remains a release blocker.
+- Approved connector and electromechanical parts must declare whether they are
+  accepted as single-source exceptions or have explicit alternates.
 
 ## Bring-Up Contract
 
@@ -38,6 +44,8 @@ treated as ready for first-article fabrication.
   behavior, and service access.
 - These checks must be specific enough that a reviewer or technician can perform
   them without relying on undocumented tribal knowledge.
+- The bring-up package must name the file or artifact where each check's pass
+  criteria are maintained.
 
 ## Validation Contract
 
@@ -48,6 +56,8 @@ treated as ready for first-article fabrication.
   mechanically significant region.
 - Known tooling quirks may be recorded, but they do not waive real netlist,
   build, or placement failures.
+- Release evidence is incomplete if the typed release ledger, interface ledger,
+  and owning TSX component files disagree about an approved-versus-blocked state.
 
 ## Release Decision Contract
 
@@ -55,3 +65,5 @@ treated as ready for first-article fabrication.
   manufacturing, and bring-up requirements are all satisfied.
 - Otherwise the board remains `fabrication-blocked` or `review-ready`, and the
   unresolved items must remain explicit in the feature artifacts.
+- `fabrication-blocked` is the required state whenever Ethernet entry, relay
+  implementation, or RTC backup support still depend on placeholders or open part decisions.

@@ -11,9 +11,9 @@
 
 **Purpose**: Align the feature artifacts with a fabrication-closure workflow so implementation can drive a real release package instead of review-only notes.
 
-- [ ] T001 Refresh the fabrication release artifact map, closure sequence, and validation workflow in `specs/003-fabrication-ready-controller/quickstart.md`
-- [ ] T002 Replace any optimistic fabrication-ready wording with an explicit release gate and blocker register in `specs/003-fabrication-ready-controller/plan.md`
-- [ ] T003 [P] Expand the feature-level signoff criteria, blocker policy, and evidence requirements in `specs/003-fabrication-ready-controller/contracts/fabrication-readiness-contract.md`
+- [X] T001 Refresh the fabrication release artifact map, closure sequence, and validation workflow in `specs/003-fabrication-ready-controller/quickstart.md`
+- [X] T002 Replace any optimistic fabrication-ready wording with an explicit release gate and blocker register in `specs/003-fabrication-ready-controller/plan.md`
+- [X] T003 [P] Expand the feature-level signoff criteria, blocker policy, and evidence requirements in `specs/003-fabrication-ready-controller/contracts/fabrication-readiness-contract.md`
 
 ---
 
@@ -23,11 +23,11 @@
 
 **⚠️ CRITICAL**: No user story work should begin until this phase is complete.
 
-- [ ] T004 Extend fabrication status handling with `fabrication-blocked` plus approved-BOM, blocker, manufacturing, procurement, and bring-up package models in `src/lib/controller-types.ts`
-- [ ] T005 [P] Replace the review-era `provisionalParts` summary with a fabrication-critical closure ledger and exact connector-decision records in `src/lib/wiring-contracts.ts`
-- [ ] T006 [P] Align the board shell with evidence-based release state, fabrication blocker visibility, and retention-closure integration points in `src/circuits/one-door-controller.tsx`
-- [ ] T007 [P] Add released-part CAD model ownership and mechanically significant footprint coverage needed by fabrication-critical components in `src/lib/cad-models.ts`
-- [ ] T008 Capture the per-story validation matrix, release evidence ownership, and blocker-to-file traceability in `specs/003-fabrication-ready-controller/quickstart.md`
+- [X] T004 Extend fabrication status handling with `fabrication-blocked` plus approved-BOM, blocker, manufacturing, procurement, and bring-up package models in `src/lib/controller-types.ts`
+- [X] T005 [P] Replace the review-era `provisionalParts` summary with a fabrication-critical closure ledger and exact connector-decision records in `src/lib/wiring-contracts.ts`
+- [X] T006 [P] Align the board shell with evidence-based release state, fabrication blocker visibility, and retention-closure integration points in `src/circuits/one-door-controller.tsx`
+- [X] T007 [P] Add released-part CAD model ownership and mechanically significant footprint coverage needed by fabrication-critical components in `src/lib/cad-models.ts`
+- [X] T008 Capture the per-story validation matrix, release evidence ownership, and blocker-to-file traceability in `specs/003-fabrication-ready-controller/quickstart.md`
 
 **Checkpoint**: Foundation ready. Fabrication-closure stories can now proceed.
 
@@ -41,20 +41,20 @@
 
 ### Implementation for User Story 1
 
-- [ ] T009 [P] [US1] Replace review-era connector, relay, retention, and service placeholder metadata with approved-or-blocked BOM records in `src/lib/controller-types.ts`
-- [ ] T010 [P] [US1] Convert interface-level provisional summaries into exact part, footprint, and closure-owner records in `src/lib/wiring-contracts.ts`
-- [ ] T011 [P] [US1] Promote the service connector from a generic header decision to an approved recovery/programming part with release metadata in `src/components/service-connectors.tsx`
-- [ ] T012 [P] [US1] Promote reader-facing and supervised-input terminal families to exact approved parts or explicit blockers in `src/components/reader-interfaces.tsx` and `src/components/supervised-input-bank.tsx`
-- [ ] T013 [P] [US1] Close the RTC, FRAM, and backup-support part decisions with exact release metadata in `src/components/retention-support.tsx`
-- [ ] T014 [US1] Remove `C_EVENT_BUFFER_PLACEHOLDER` and tie the board shell to the new fabrication-closure records in `src/circuits/one-door-controller.tsx`
-- [ ] T015 [US1] Publish the fabrication-critical BOM ledger, unresolved blocker criteria, and closure ownership in `specs/003-fabrication-ready-controller/plan.md` and `specs/003-fabrication-ready-controller/contracts/fabrication-readiness-contract.md`
+- [X] T009 [P] [US1] Replace review-era connector, relay, retention, and service placeholder metadata with approved-or-blocked BOM records in `src/lib/controller-types.ts`
+- [X] T010 [P] [US1] Convert interface-level provisional summaries into exact part, footprint, and closure-owner records in `src/lib/wiring-contracts.ts`
+- [X] T011 [P] [US1] Promote the service connector from a generic header decision to an approved recovery/programming part with release metadata in `src/components/service-connectors.tsx`
+- [X] T012 [P] [US1] Promote reader-facing and supervised-input terminal families to exact approved parts or explicit blockers in `src/components/reader-interfaces.tsx` and `src/components/supervised-input-bank.tsx`
+- [X] T013 [P] [US1] Close the RTC, FRAM, and backup-support part decisions with exact release metadata in `src/components/retention-support.tsx`
+- [X] T014 [US1] Remove `C_EVENT_BUFFER_PLACEHOLDER` and tie the board shell to the new fabrication-closure records in `src/circuits/one-door-controller.tsx`
+- [X] T015 [US1] Publish the fabrication-critical BOM ledger, unresolved blocker criteria, and closure ownership in `specs/003-fabrication-ready-controller/plan.md` and `specs/003-fabrication-ready-controller/contracts/fabrication-readiness-contract.md`
 
 ### Validation for User Story 1 (MANDATORY)
 
-- [ ] T016 [P] [US1] Run `npm run typecheck` for `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts`, `src/components/service-connectors.tsx`, `src/components/reader-interfaces.tsx`, `src/components/supervised-input-bank.tsx`, `src/components/retention-support.tsx`, and `src/circuits/one-door-controller.tsx`
-- [ ] T017 [P] [US1] Run `tsci check netlist` for the fabrication-critical part-closure updates rendered from `index.circuit.tsx`
-- [ ] T018 [US1] Run `tsci build` and `tsci snapshot` to capture the approved-versus-blocked fabrication baseline from `index.circuit.tsx`
-- [ ] T019 [US1] Run `tsci check placement` for retention, service, and installer-connector footprint changes in `src/circuits/one-door-controller.tsx`
+- [X] T016 [P] [US1] Run `npm run typecheck` for `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts`, `src/components/service-connectors.tsx`, `src/components/reader-interfaces.tsx`, `src/components/supervised-input-bank.tsx`, `src/components/retention-support.tsx`, and `src/circuits/one-door-controller.tsx`
+- [X] T017 [P] [US1] Run `tsci check netlist` for the fabrication-critical part-closure updates rendered from `index.circuit.tsx`
+- [X] T018 [US1] Run `tsci build` and `tsci snapshot` to capture the approved-versus-blocked fabrication baseline from `index.circuit.tsx`
+- [X] T019 [US1] Run `tsci check placement` for retention, service, and installer-connector footprint changes in `src/circuits/one-door-controller.tsx`
 
 **Checkpoint**: User Story 1 should independently prove that fabrication-critical placeholders are no longer implicit.
 

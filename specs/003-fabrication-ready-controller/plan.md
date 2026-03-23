@@ -12,6 +12,11 @@ placeholder retention and connector decisions, and adding explicit
 manufacturing, procurement, and bring-up evidence without changing the accepted
 controller architecture from Features 001 and 002.
 
+The board is not treated as fabrication-ready at the start of 003. The working
+release state for this feature is `fabrication-blocked` until the blocker
+register is empty and all release evidence is present in source plus feature
+artifacts.
+
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x with TSX (`strict: true`)  
@@ -35,6 +40,23 @@ controller architecture from Features 001 and 002.
 - **Current validation baseline**: Prior milestone evidence indicates green
   `npm run typecheck`, `tsci check netlist`, `tsci build`, `tsci snapshot`, and
   `tsci check placement`, with known non-blocking placeholder-chip warnings.
+
+## Release Gate And Blocker Register
+
+`fabrication-ready` is a release gate, not an aspirational label. 003 therefore
+tracks the board as `fabrication-blocked` until the following blockers are closed:
+
+| Blocker key | Current state | Owner | Owning files | Closure criteria |
+| ----------- | ------------- | ----- | ------------ | ---------------- |
+| `ethernet_magjack` | open | LAN entry review | `src/components/ethernet-poe-front-end.tsx`, `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts` | exact PoE-capable LAN entry part, footprint, shield treatment, and board-edge assumptions approved |
+| `ethernet_poe_entry_boundary` | open | LAN entry review | `src/components/ethernet-poe-front-end.tsx`, `src/circuits/one-door-controller.tsx` | PoE ingress, center-tap treatment, and board-edge placement constraints documented and validated |
+| `lock_relay` | open | lock-interface review | `src/components/relay-lock-output.tsx`, `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts` | exact relay package, contact rating, and footprint approved |
+| `lock_relay_drive` | open | lock-interface review | `src/components/relay-lock-output.tsx`, `src/components/power-domains.tsx` | coil-drive path and suppression network implemented and validated |
+| `rtc_backup_source` | open | retention review | `src/components/retention-support.tsx`, `src/lib/controller-types.ts` | backup-source topology promoted from hold-up capacitor placeholder to approved part or justified blocker |
+
+All other fabrication-critical items must resolve to explicit `approved` or
+`blocked` states in the typed release ledger. No implicit review-only wording is
+allowed once 003 lands.
 
 ## Architecture Impact
 
@@ -136,6 +158,26 @@ the current modules.
   placement and board-edge assumptions.
 - Treat fabrication-ready status as blocked unless the documentation package and
   source tree agree on approved parts, blockers, and bring-up expectations.
+
+## Fabrication-Critical BOM Ledger Baseline
+
+- Service recovery header: may be approved if exact footprint, sourcing path,
+  and use boundary are explicit.
+- Reader and supervised-input terminals: may be approved when the Phoenix
+  terminal series and pin counts are explicit and placement remains installer-facing.
+- RTC and FRAM devices: may be approved if the exact parts remain aligned with
+  the retention package and no board-level placeholders remain for the devices themselves.
+- Ethernet entry, PoE ingress boundary, relay device, relay drive, and RTC backup
+  source remain release blockers until the physical implementation is fully defined.
+
+## Evidence Ownership
+
+- Hardware architecture review owns the typed release-state ledger in `src/lib/controller-types.ts`.
+- Interface closure review owns connector decisions and traceability in `src/lib/wiring-contracts.ts`.
+- LAN entry review owns Ethernet mechanical and PoE ingress closure.
+- Lock-interface review owns relay device, drive path, and dry-contact boundary validation.
+- Retention review owns RTC, FRAM, and backup-domain closure.
+- Release owner owns the final consistency pass across source, specs, and validation artifacts.
 
 ## Sequencing
 

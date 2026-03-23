@@ -1,3 +1,8 @@
+import type {
+  FabricationCriticalPartModel,
+  PartApprovalStatus,
+} from "./controller-types"
+
 export interface NetContract {
   name: string
   purpose: string
@@ -13,7 +18,20 @@ export interface InterfaceContract {
 export interface ConnectorFamilyAssignment {
   interfaceName: string
   connectorFamily: string
+  exactPart: string
+  pinCount: number
+  status: PartApprovalStatus
   notes: string
+  sourceOfTruthFile: string
+}
+
+export interface FabricationClosureLedgerEntry {
+  interfaceName: string
+  status: PartApprovalStatus
+  owningFiles: string[]
+  criticalPartKeys: string[]
+  closureSummary: string
+  blockerSummary: string | null
 }
 
 export const powerNets: NetContract[] = [
@@ -198,53 +216,151 @@ export const installerInterfaces: InterfaceContract[] = [
   },
 ]
 
-export const provisionalParts = [
-  "Primary MCU with integrated Ethernet MAC and enough GPIO/UART/SPI/I2C margin for one-door control",
-  "External RMII PHY with 10/100 Ethernet support and manageable clocking/reset boundary",
-  "RJ45 magjack footprint and integrated magnetics selection",
-  "PoE PD controller footprint and power conversion chain",
-  "Dry relay package, coil drive topology, and contact rating",
-  "Tag-Connect or equivalent compact service-access footprint",
-  "Terminal block family for field-side lock and input wiring",
-  "Field-side surge clamp and resettable fuse selections for reader and input wiring",
-  "RTC backup source and low-power timekeeping device",
-  "FRAM or NOR flash device for offline event buffering",
+export const fabricationClosureLedger: FabricationClosureLedgerEntry[] = [
+  {
+    interfaceName: "ethernet_poe_rj45",
+    status: "blocked",
+    owningFiles: ["src/components/ethernet-poe-front-end.tsx", "src/circuits/one-door-controller.tsx", "src/lib/controller-types.ts"],
+    criticalPartKeys: ["ethernet_magjack", "ethernet_poe_entry_boundary"],
+    closureSummary: "PHY selection is stable, but the board-edge PoE-capable LAN entry hardware remains unresolved.",
+    blockerSummary: "Approve the exact magjack or connector-plus-magnetics implementation and finalize PoE ingress plus shield treatment.",
+  },
+  {
+    interfaceName: "external_lock_power",
+    status: "approved",
+    owningFiles: ["src/components/relay-lock-output.tsx", "src/lib/controller-types.ts"],
+    criticalPartKeys: [],
+    closureSummary: "Installer lock supply entry is fixed to the Phoenix Contact MKDS 1,5/3-5,08 5.08 mm terminal family.",
+    blockerSummary: null,
+  },
+  {
+    interfaceName: "dry_relay_output",
+    status: "blocked",
+    owningFiles: ["src/components/relay-lock-output.tsx", "src/components/power-domains.tsx", "src/lib/controller-types.ts"],
+    criticalPartKeys: ["lock_relay", "lock_relay_drive"],
+    closureSummary: "Field contact terminals are approved, but the electromechanical relay device and coil-drive network are not yet implemented.",
+    blockerSummary: "Approve one dry-contact relay and implement its full drive and suppression path.",
+  },
+  {
+    interfaceName: "osdp_reader_port",
+    status: "approved",
+    owningFiles: ["src/components/reader-interfaces.tsx", "src/lib/controller-types.ts"],
+    criticalPartKeys: ["reader_terminal_blocks"],
+    closureSummary: "The OSDP reader port is fixed to an approved 4-position Phoenix Contact MC-series 3.81 mm terminal family.",
+    blockerSummary: null,
+  },
+  {
+    interfaceName: "wiegand_reader_port",
+    status: "approved",
+    owningFiles: ["src/components/reader-interfaces.tsx", "src/lib/controller-types.ts"],
+    criticalPartKeys: ["reader_terminal_blocks"],
+    closureSummary: "The Wiegand compatibility port uses the same approved 4-position Phoenix Contact MC-series 3.81 mm terminal family.",
+    blockerSummary: null,
+  },
+  {
+    interfaceName: "supervised_inputs",
+    status: "approved",
+    owningFiles: ["src/components/supervised-input-bank.tsx", "src/lib/controller-types.ts"],
+    criticalPartKeys: ["supervised_input_terminal_blocks"],
+    closureSummary: "Door, REX, tamper, and auxiliary fault loops are fixed to approved 4-position Phoenix Contact MC-series terminals.",
+    blockerSummary: null,
+  },
+  {
+    interfaceName: "service_debug",
+    status: "approved",
+    owningFiles: ["src/components/service-connectors.tsx", "src/lib/controller-types.ts"],
+    criticalPartKeys: ["service_debug_header"],
+    closureSummary: "The service interface is fixed to a 2x05 1.27 mm recovery header compatible with Harwin M50-3500542.",
+    blockerSummary: null,
+  },
+  {
+    interfaceName: "timekeeping_and_buffering",
+    status: "blocked",
+    owningFiles: ["src/components/retention-support.tsx", "src/circuits/one-door-controller.tsx", "src/lib/controller-types.ts"],
+    criticalPartKeys: ["rtc_device", "event_fram", "rtc_backup_source"],
+    closureSummary: "RTC and FRAM devices are fixed, and the board-level event buffer placeholder has been removed.",
+    blockerSummary: "Approve the long-duration RTC backup source before clearing the retention workstream.",
+  },
+]
+
+export const fabricationCriticalPartTraceability: Pick<
+  FabricationCriticalPartModel,
+  "partKey" | "status" | "sourceOfTruthFile"
+>[] = [
+  { partKey: "service_debug_header", status: "approved", sourceOfTruthFile: "src/components/service-connectors.tsx" },
+  { partKey: "reader_terminal_blocks", status: "approved", sourceOfTruthFile: "src/components/reader-interfaces.tsx" },
+  { partKey: "supervised_input_terminal_blocks", status: "approved", sourceOfTruthFile: "src/components/supervised-input-bank.tsx" },
+  { partKey: "rtc_device", status: "approved", sourceOfTruthFile: "src/components/retention-support.tsx" },
+  { partKey: "event_fram", status: "approved", sourceOfTruthFile: "src/components/retention-support.tsx" },
+  { partKey: "rtc_backup_source", status: "blocked", sourceOfTruthFile: "src/components/retention-support.tsx" },
+  { partKey: "ethernet_magjack", status: "blocked", sourceOfTruthFile: "src/components/ethernet-poe-front-end.tsx" },
+  { partKey: "ethernet_poe_entry_boundary", status: "blocked", sourceOfTruthFile: "src/components/ethernet-poe-front-end.tsx" },
+  { partKey: "lock_relay", status: "blocked", sourceOfTruthFile: "src/components/relay-lock-output.tsx" },
+  { partKey: "lock_relay_drive", status: "blocked", sourceOfTruthFile: "src/components/relay-lock-output.tsx" },
 ]
 
 export const connectorFamilyAssignments: ConnectorFamilyAssignment[] = [
   {
     interfaceName: "ethernet_poe_rj45",
     connectorFamily: "shielded_rj45_magjack",
-    notes: "Integrated magnetics and shield handling stay at the LAN edge",
+    exactPart: "PoE-capable integrated magjack TBD",
+    pinCount: 8,
+    status: "blocked",
+    notes: "Integrated magnetics and shield handling stay at the LAN edge, but the final part remains a fabrication blocker.",
+    sourceOfTruthFile: "src/components/ethernet-poe-front-end.tsx",
   },
   {
     interfaceName: "external_lock_power",
     connectorFamily: "pluggable_terminal_5_08mm",
+    exactPart: "Phoenix Contact MKDS 1,5/3-5,08",
+    pinCount: 3,
+    status: "approved",
     notes: "Installer-facing terminal for external 12V or 24V lock supply only",
+    sourceOfTruthFile: "src/components/relay-lock-output.tsx",
   },
   {
     interfaceName: "dry_relay_output",
     connectorFamily: "pluggable_terminal_5_08mm",
+    exactPart: "Phoenix Contact MKDS 1,5/3-5,08",
+    pinCount: 3,
+    status: "approved",
     notes: "Dedicated Form-C dry relay field terminal kept distinct from logic wiring",
+    sourceOfTruthFile: "src/components/relay-lock-output.tsx",
   },
   {
     interfaceName: "osdp_reader_port",
     connectorFamily: "pluggable_terminal_3_81mm",
+    exactPart: "Phoenix Contact MC 1,5/4-G-3,81",
+    pinCount: 4,
+    status: "approved",
     notes: "Reader bus terminal reserved for RS-485 A/B, auxiliary power, and field return",
+    sourceOfTruthFile: "src/components/reader-interfaces.tsx",
   },
   {
     interfaceName: "wiegand_reader_port",
     connectorFamily: "pluggable_terminal_3_81mm",
+    exactPart: "Phoenix Contact MC 1,5/4-G-3,81",
+    pinCount: 4,
+    status: "approved",
     notes: "Retrofit reader terminal reserved for D0, D1, LED, beeper, and field return",
+    sourceOfTruthFile: "src/components/reader-interfaces.tsx",
   },
   {
     interfaceName: "supervised_inputs",
     connectorFamily: "pluggable_terminal_3_81mm",
+    exactPart: "Phoenix Contact MC 1,5/4-G-3,81",
+    pinCount: 4,
+    status: "approved",
     notes: "Door, REX, tamper, and fault wiring stays on installer-facing low-density terminals",
+    sourceOfTruthFile: "src/components/supervised-input-bank.tsx",
   },
   {
     interfaceName: "service_debug",
     connectorFamily: "tag_connect_2x5_1_27mm",
+    exactPart: "Harwin M50-3500542 2x05 1.27 mm vertical header",
+    pinCount: 10,
+    status: "approved",
     notes: "Programming and recovery remain separate from installer wiring",
+    sourceOfTruthFile: "src/components/service-connectors.tsx",
   },
 ]

@@ -8,6 +8,8 @@ import { ServiceConnectors } from "../components/service-connectors"
 import { SupervisedInputBank } from "../components/supervised-input-bank"
 import { controllerBoardModel } from "../lib/controller-types"
 
+const retentionClosure = controllerBoardModel.retentionClosure
+
 export const OneDoorController = () => (
   <board
     width={controllerBoardModel.boardOutline.width}
@@ -47,7 +49,7 @@ export const OneDoorController = () => (
       <ServiceConnectors />
     </group>
 
-    <capacitor name="C_EVENT_BUFFER_PLACEHOLDER" capacitance="1uF" footprint="0402" pcbX={-60} pcbY={40} />
+    <capacitor name="C_EVENT_BUFFER_HOLDUP" capacitance={retentionClosure.localHoldUpCapacitance} footprint="0402" pcbX={-60} pcbY={40} />
     <resistor name="R_SYNC_PENDING_STATUS" resistance="1k" footprint="0402" pcbX={-52} pcbY={40} />
     <capacitor name="C_SYNC_PENDING_FILTER" capacitance="100nF" footprint="0402" pcbX={-44} pcbY={40} />
     <resistor name="R_MGMT_OFFLINE_STATUS" resistance="1k" footprint="0402" pcbX={-36} pcbY={40} />
@@ -70,8 +72,8 @@ export const OneDoorController = () => (
     <resistor name="R_SERVICE_BOOT_CFG_PULLUP" resistance="10k" footprint="0402" pcbX={-12} pcbY={32} />
     <capacitor name="C_WATCHDOG_ALERT_FILTER" capacitance="10nF" footprint="0402" pcbX={-4} pcbY={32} />
 
-    <trace from=".C_EVENT_BUFFER_PLACEHOLDER > .pin1" to="net.V3_3_LOGIC" />
-    <trace from=".C_EVENT_BUFFER_PLACEHOLDER > .pin2" to="net.GND_LOGIC" />
+    <trace from=".C_EVENT_BUFFER_HOLDUP > .pin1" to="net.V3_3_LOGIC" />
+    <trace from=".C_EVENT_BUFFER_HOLDUP > .pin2" to="net.GND_LOGIC" />
     <trace from=".R_SYNC_PENDING_STATUS > .pin1" to="net.V3_3_LOGIC" />
     <trace from=".R_SYNC_PENDING_STATUS > .pin2" to="net.SYNC_PENDING" />
     <trace from=".C_SYNC_PENDING_FILTER > .pin1" to="net.SYNC_PENDING" />

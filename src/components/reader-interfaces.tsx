@@ -3,6 +3,12 @@ type PlacementProps = {
   pcbY?: number
 }
 
+export const READER_CONNECTOR_RELEASE = {
+  osdpTerminalPart: "Phoenix Contact MC 1,5/4-G-3,81",
+  wiegandTerminalPart: "Phoenix Contact MC 1,5/4-G-3,81",
+  placementBoundary: "installer-facing field terminals remain separate from service and controller-core circuitry",
+} as const
+
 // MAX3485ESA+T SOIC-8 pinout (Analog Devices datasheet):
 const rs485TransceiverPinLabels = {
   pin1: "RO",    // Receiver output
@@ -27,6 +33,22 @@ const rs485ProtectionPinLabels = {
 
 export const ReaderInterfaces = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
   <group pcbX={pcbX} pcbY={pcbY}>
+    <chip
+      name="J_OSDP_TB"
+      footprint="kicad:Connector_Phoenix_MC/PhoenixContact_MC_1,5_4-G-3.81_1x04_P3.81mm_Horizontal"
+      supplierPartNumbers={{ digikey: [READER_CONNECTOR_RELEASE.osdpTerminalPart] }}
+      pcbX={-28}
+      pcbY={-12}
+      pinLabels={{ pin1: "OSDP_A", pin2: "OSDP_B", pin3: "FIELD_12V", pin4: "FIELD_GND" }}
+    />
+    <chip
+      name="J_WIEGAND_TB"
+      footprint="kicad:Connector_Phoenix_MC/PhoenixContact_MC_1,5_4-G-3.81_1x04_P3.81mm_Horizontal"
+      supplierPartNumbers={{ digikey: [READER_CONNECTOR_RELEASE.wiegandTerminalPart] }}
+      pcbX={-28}
+      pcbY={8}
+      pinLabels={{ pin1: "W0_D0", pin2: "W1_D1", pin3: "LED_CTRL", pin4: "BEEP_CTRL" }}
+    />
     <chip
       name="U_OSDP_XCVR"
       footprint="kicad:Package_SO/SOIC-8_3.9x4.9mm_P1.27mm"
@@ -76,6 +98,14 @@ export const ReaderInterfaces = ({ pcbX = 0, pcbY = 0 }: PlacementProps) => (
     <trace from=".U_OSDP_XCVR > .RE_N" to="net.OSDP_RX_EN_N" />
     <trace from=".U_OSDP_XCVR > .BUS_A" to="net.READER_OSDP_A" />
     <trace from=".U_OSDP_XCVR > .BUS_B" to="net.READER_OSDP_B" />
+    <trace from=".J_OSDP_TB > .OSDP_A" to="net.READER_OSDP_A" />
+    <trace from=".J_OSDP_TB > .OSDP_B" to="net.READER_OSDP_B" />
+    <trace from=".J_OSDP_TB > .FIELD_12V" to="net.V12_READER_FIELD" />
+    <trace from=".J_OSDP_TB > .FIELD_GND" to="net.GND_FIELD" />
+    <trace from=".J_WIEGAND_TB > .W0_D0" to="net.WIEGAND_D0" />
+    <trace from=".J_WIEGAND_TB > .W1_D1" to="net.WIEGAND_D1" />
+    <trace from=".J_WIEGAND_TB > .LED_CTRL" to="net.READER_LED" />
+    <trace from=".J_WIEGAND_TB > .BEEP_CTRL" to="net.READER_BEEP" />
     <trace from=".U_OSDP_PROTECT > .BUS_A" to="net.READER_OSDP_A" />
     <trace from=".U_OSDP_PROTECT > .BUS_B" to="net.READER_OSDP_B" />
     <trace from=".U_OSDP_PROTECT > .GND" to="net.GND_FIELD" />

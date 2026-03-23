@@ -53,6 +53,20 @@ src/
 8. Run the full validation set and only leave the board in `fabrication-ready`
    state if no fabrication-critical blockers remain.
 
+## Release Gate
+
+The board starts 003 in `fabrication-blocked` state and only moves to
+`fabrication-ready` after the following gate is satisfied:
+
+- every fabrication-critical part has an explicit `approved` or `blocked` record
+- every field-facing connector has an exact part decision or a named blocker
+- Ethernet entry, relay path, and retention support no longer rely on hidden placeholders
+- manufacturing, procurement, and bring-up evidence all point at the same source state
+- `npm run typecheck`, `tsci check netlist`, `tsci build`, `tsci snapshot`, and any required `tsci check placement` run cleanly for the candidate
+
+If any one of these remains open, the board stays `fabrication-blocked` and the
+release package must name the blocker, owner, closure criteria, and owning file.
+
 ## Architecture To Preserve
 
 - PoE powers logic, networking, retention, service circuitry, and reader auxiliary
@@ -93,6 +107,16 @@ changes affect board edge, footprint choice, or placement spacing:
 tsci check placement
 ```
 
+## Validation Matrix
+
+| Workstream | Source of truth | Required checks | Evidence owner |
+| ---------- | --------------- | --------------- | -------------- |
+| Release-state and blocker ledger | `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts` | `npm run typecheck` | hardware architecture review |
+| Service, reader, supervised-input, and retention closure | `src/components/service-connectors.tsx`, `src/components/reader-interfaces.tsx`, `src/components/supervised-input-bank.tsx`, `src/components/retention-support.tsx`, `src/circuits/one-door-controller.tsx` | `npm run typecheck`, `tsci check netlist`, `tsci build`, `tsci snapshot`, `tsci check placement` when footprints move | fabrication closure review |
+| Ethernet physical lock-in | `src/components/ethernet-poe-front-end.tsx`, `src/circuits/one-door-controller.tsx` | `npm run typecheck`, `tsci check netlist`, `tsci build`, `tsci snapshot`, `tsci check placement` | LAN entry review |
+| Relay and lock-boundary lock-in | `src/components/relay-lock-output.tsx`, `src/components/power-domains.tsx`, `src/lib/wiring-contracts.ts` | `npm run typecheck`, `tsci check netlist`, `tsci build`, `tsci snapshot`, `tsci check placement` | lock-interface review |
+| Manufacturing, procurement, and bring-up package | `specs/003-fabrication-ready-controller/plan.md`, `specs/003-fabrication-ready-controller/contracts/fabrication-readiness-contract.md`, `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts` | consistency review plus final validation sweep | release owner |
+
 ## Release Evidence Expectations
 
 The feature is only ready to describe as fabrication-ready when the repository
@@ -106,6 +130,25 @@ contains all of the following in a consistent state:
 - bring-up checklist covering power, Ethernet, relay, reader, retention, and service access
 - green TypeScript and `tsci` validation results for the release candidate
 
+## Blocker Traceability
+
+Each fabrication blocker must be traceable through all three layers below:
+
+- typed release-state record in `src/lib/controller-types.ts`
+- interface or connector closure ledger entry in `src/lib/wiring-contracts.ts`
+- owning component or board file that still requires closure
+
+Use the following part keys as the primary traceability spine during 003:
+
+- `ethernet_magjack`
+- `ethernet_poe_entry_boundary`
+- `lock_relay`
+- `lock_relay_drive`
+- `rtc_backup_source`
+- `service_debug_header`
+- `reader_terminal_blocks`
+- `supervised_input_terminal_blocks`
+
 ## First-Article Bring-Up Minimums
 
 - Verify PoE intake, intermediate rails, and 3.3 V logic rail behavior
@@ -114,6 +157,15 @@ contains all of the following in a consistent state:
 - Verify reader auxiliary power and at least basic OSDP and Wiegand continuity
 - Verify RTC continuity and retained event storage behavior across simulated power loss
 - Verify service connector programming, reset, and recovery access
+
+## Release Artifact Map
+
+- `src/lib/controller-types.ts`: board status, fabrication-critical part states, manufacturing package, procurement package, bring-up package
+- `src/lib/wiring-contracts.ts`: connector decisions, interface ledger, and blocker-to-file traceability
+- `src/circuits/one-door-controller.tsx`: board-level retention support and integration-sensitive placement state
+- `src/components/*.tsx`: exact component, footprint, and sourcing choices for the owning subsystem
+- `specs/003-fabrication-ready-controller/plan.md`: gate status, blocker register, and release decision summary
+- `specs/003-fabrication-ready-controller/contracts/fabrication-readiness-contract.md`: signoff rules and evidence contract
 
 ## Known Risks To Eliminate In 003
 
