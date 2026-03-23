@@ -13,6 +13,14 @@ model.
   synchronization.
 - Reconnection MUST support a resynchronization phase that does not block normal
   door operation.
+- Offline, degraded, and resyncing states should remain review-visible through
+  explicit controller status paths or annotated design artifacts.
+- Online, degraded, offline, and resyncing states must remain distinguishable as
+  separate review-visible paths rather than a single generic management LED.
+- The design should reserve a power-fail indication path so event buffering can
+  be reasoned about across brownout or abrupt power interruption scenarios.
+- The design should reserve service access for commissioning and recovery without
+  exposing field wiring to logic-domain debug paths.
 
 ## Door-Control Contract
 
@@ -27,3 +35,9 @@ model.
 - Tamper and abnormal-power conditions must map to distinct operational events.
 - The controller must expose enough status signals for review artifacts to show
   normal operation, degraded management connectivity, and buffered-event state.
+- RTC-backed event ordering and nonvolatile event retention assumptions must be
+  explicit enough that a reviewer can distinguish "temporarily offline but safe"
+  from "state may be lost on reset" behavior.
+- A service/debug path for maintenance UART or strap access should remain
+  review-visible, alongside watchdog or recovery-state visibility, without
+  implying that central management can override local life-safety behavior.

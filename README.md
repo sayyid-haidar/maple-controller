@@ -2,7 +2,28 @@
 
 TypeScript/TSX hardware design project built with tscircuit.
 
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![tscircuit](https://img.shields.io/badge/tscircuit-hardware%20as%20code-0A7EA4)](https://docs.tscircuit.com/)
+[![Status](https://img.shields.io/badge/status-active%20design-orange)](./specs/001-door-access-controller/plan.md)
+[![Target](https://img.shields.io/badge/target-one--door%20access%20controller-1F6FEB)](./specs/001-door-access-controller/spec.md)
+
 Repository ini diarahkan untuk merancang one-door access controller berbasis LAN dengan pendekatan modern, typed, dan reviewable. Fokusnya bukan membuat clone vendor tertentu, tetapi membangun desain orisinal dalam kelas produk yang sama dengan controller seperti ZKTeco C3 atau Verkada AC12.
+
+## Architecture Snapshot
+
+```mermaid
+flowchart LR
+    LAN[Ethernet LAN / PoE] --> ETH[Ethernet + PoE Front End]
+    ETH --> LOGIC[Logic and Control Domain]
+    LOGIC --> MGMT[Management Link]
+    LOGIC --> STORE[RTC + Event Buffer]
+    LOGIC --> READER1[OSDP / RS-485 Reader]
+    LOGIC --> READER2[Wiegand Reader]
+    LOGIC --> INPUTS[Door Contact / REX / Tamper / Fault Inputs]
+    LOGIC --> RELAY[Dry Form-C Relay Control]
+    LOCKPWR[External 12V / 24V Lock Power] --> RELAY
+    RELAY --> LOCK[Door Lock]
+```
 
 ## Overview
 
@@ -89,6 +110,13 @@ Update snapshots when needed:
 npm run snapshot:update
 ```
 
+## What You Will Find Here
+
+- `index.circuit.tsx` sebagai entrypoint circuit saat ini
+- dokumen desain lengkap untuk feature controller satu pintu
+- workflow validasi berbasis `tsci`
+- struktur repo yang siap dipecah menjadi subcircuit per domain elektrikal
+
 ## Recommended Validation Flow
 
 Untuk perubahan circuit yang bermakna, jalankan:
@@ -127,6 +155,15 @@ Dokumen yang paling relevan untuk memahami arah project:
 - `specs/001-door-access-controller/research.md`
 - `specs/001-door-access-controller/plan.md`
 - `specs/001-door-access-controller/tasks.md`
+
+## Design Documents
+
+Jika ingin memahami project dari level requirement ke implementasi, urutannya adalah:
+
+1. `spec.md` untuk ruang lingkup dan kebutuhan sistem
+2. `research.md` untuk keputusan arsitektur utama
+3. `plan.md` untuk bentuk implementasi teknis
+4. `tasks.md` untuk urutan eksekusi pekerjaan
 
 ## Planned Implementation Layout
 

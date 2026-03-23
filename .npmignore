@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+.tscircuit/
+.specify/
+.github/
+.vscode/
+specs/
+*.log
+.env*
+.DS_Store
+Thumbs.db

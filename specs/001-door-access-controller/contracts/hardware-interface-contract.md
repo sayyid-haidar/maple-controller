@@ -41,9 +41,26 @@ one-door controller board.
   preferred security path for new deployments.
 - Reader-facing power and data lines must have protection appropriate for field
   wiring.
+- Reader auxiliary power must pass through a field-side protection stage before
+  being presented to installer wiring.
+- Compatibility reader control lines such as LED and beeper signaling must stay
+  explicitly review-visible even when they remain provisional placeholders.
 
 ### Supervised Inputs
 
 - Door contact, REX, and tamper/fault inputs must be clearly labeled and mapped
   to distinct controller states.
 - The design must state whether each channel is dry-contact only or supports end-of-line supervision.
+- Door contact and REX paths must reserve explicit supervision placeholders so
+  reviewers can see where end-of-line assumptions terminate.
+- Tamper and abnormal-power inputs must show their own field-side damping or
+  filtering placeholders instead of being implied by firmware alone.
+
+### Lock Output Boundary
+
+- Lock relay NO and NC paths must show field-side suppression placeholders near
+  the installer-facing boundary.
+- Both 12V and 24V external lock supply entries must show local filtering or
+  transient placeholders independent from PoE logic power.
+- Relay contact rating remains provisional, but the board review artifacts must
+  make the dry-contact boundary visually distinct from logic-domain control.

@@ -28,6 +28,44 @@ buffering for centrally managed operation with offline fallback.
 **Constraints**: Preserve circuit intent, keep render logic pure, use PoE only for controller logic/networking, use external 12V/24V lock power via dry relay, document surge/isolation boundaries, and avoid proprietary schematic reuse  
 **Scale/Scope**: One physical door, one active controller board variant, one lock path, one door-state path, one exit path, one tamper path, and installer-facing support for both OSDP/RS-485 and Wiegand reader interfaces
 
+## Implementation Baseline
+
+- **Current fabrication status**: exploratory
+- **Current implementation scope**: full exploratory shell for US1-US4 with
+  modular subsystem placeholders, typed management/service models, and explicit
+  review-visible field/status paths
+- **Validation baseline**: `npm run typecheck`, `tsci check netlist`,
+  `tsci build`, `tsci snapshot`, and `tsci check placement` after placement or
+  outline changes
+
+## Initial Blockers And Provisional Decisions
+
+- RJ45 magjack and Ethernet magnetics footprint are still provisional
+- PoE PD controller and downstream regulator chain are represented as typed and
+  placement placeholders pending concrete part selection
+- Dry relay package, contact rating, and suppression topology remain provisional
+- Terminal block families for lock, reader, and monitored inputs remain
+  provisional until installer wiring assumptions are finalized
+- RTC, nonvolatile event-buffer storage, and service/debug access are now
+  represented in the circuit shell as explicit placeholder nets and review paths,
+  but concrete devices and connector families remain provisional
+- The exploratory board shell intentionally keeps `routingDisabled` enabled at
+  the board level while interface structure, zoning, and subsystem contracts are
+  being validated before detailed routing work begins
+
+## Final Review Summary
+
+- Modular TSX subcircuits now cover Ethernet/PoE, power domains, reader
+  interfaces, supervised inputs, and relay lock output without collapsing into a
+  monolithic board expression.
+- Shared typing now covers management states, service access modes, offline
+  buffering, timekeeping, and installer-facing interface expectations.
+- Field-review artifacts now expose online, degraded, offline, resyncing,
+  power-fail, RTC, event-buffer, and service/debug placeholder paths.
+- The shell remains exploratory rather than fabrication-ready because concrete
+  connector, protection, relay, controller, RTC, and memory parts are still
+  provisional.
+
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*

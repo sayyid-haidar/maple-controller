@@ -11,9 +11,9 @@
 
 **Purpose**: Prepare the repository structure and planning references used by all implementation work.
 
-- [ ] T001 Create the planned source structure in `src/circuits/one-door-controller.tsx`, `src/components/ethernet-poe-front-end.tsx`, `src/components/power-domains.tsx`, `src/components/reader-interfaces.tsx`, `src/components/supervised-input-bank.tsx`, `src/components/relay-lock-output.tsx`, `src/lib/controller-types.ts`, and `src/lib/wiring-contracts.ts`
-- [ ] T002 Confirm the implementation file layout and validation workflow in `specs/001-door-access-controller/quickstart.md`
-- [ ] T003 [P] Record the initial fabrication-readiness baseline and unresolved part-selection assumptions in `specs/001-door-access-controller/plan.md`
+- [x] T001 Create the planned source structure in `src/circuits/one-door-controller.tsx`, `src/components/ethernet-poe-front-end.tsx`, `src/components/power-domains.tsx`, `src/components/reader-interfaces.tsx`, `src/components/supervised-input-bank.tsx`, `src/components/relay-lock-output.tsx`, `src/lib/controller-types.ts`, and `src/lib/wiring-contracts.ts`
+- [x] T002 Confirm the implementation file layout and validation workflow in `specs/001-door-access-controller/quickstart.md`
+- [x] T003 [P] Record the initial fabrication-readiness baseline and unresolved part-selection assumptions in `specs/001-door-access-controller/plan.md`
 
 ---
 
@@ -23,11 +23,11 @@
 
 **⚠️ CRITICAL**: No user story work should begin until this phase is complete.
 
-- [ ] T004 Define shared domain types for controller variants, power domains, reader modes, lock policies, management states, and event records in `src/lib/controller-types.ts`
-- [ ] T005 [P] Define reusable installer-facing connectors, named nets, and interface contracts in `src/lib/wiring-contracts.ts`
-- [ ] T006 [P] Create the base board shell with 4-layer constraints, placement zones, fabrication status, and composition hooks in `src/circuits/one-door-controller.tsx`
-- [ ] T007 [P] Replace the current stub board with a thin feature entrypoint that renders `src/circuits/one-door-controller.tsx` from `index.circuit.tsx`
-- [ ] T008 Capture provisional footprints, protection boundaries, and board-review blockers shared across stories in `specs/001-door-access-controller/plan.md`
+- [x] T004 Define shared domain types for controller variants, power domains, reader modes, lock policies, management states, and event records in `src/lib/controller-types.ts`
+- [x] T005 [P] Define reusable installer-facing connectors, named nets, and interface contracts in `src/lib/wiring-contracts.ts`
+- [x] T006 [P] Create the base board shell with 4-layer constraints, placement zones, fabrication status, and composition hooks in `src/circuits/one-door-controller.tsx`
+- [x] T007 [P] Replace the current stub board with a thin feature entrypoint that renders `src/circuits/one-door-controller.tsx` from `index.circuit.tsx`
+- [x] T008 Capture provisional footprints, protection boundaries, and board-review blockers shared across stories in `specs/001-door-access-controller/plan.md`
 
 **Checkpoint**: Foundation ready. User story implementation can now proceed.
 
@@ -41,19 +41,19 @@
 
 ### Validation for User Story 1 (MANDATORY)
 
-- [ ] T009 [P] [US1] Run `npm run typecheck` against `index.circuit.tsx`, `src/circuits/one-door-controller.tsx`, `src/components/ethernet-poe-front-end.tsx`, `src/components/power-domains.tsx`, and `src/components/relay-lock-output.tsx`
-- [ ] T010 [P] [US1] Run `tsci check netlist` for the board defined by `index.circuit.tsx` and `src/circuits/one-door-controller.tsx`
-- [ ] T011 [US1] Run `tsci build` and `tsci snapshot` for the P1 assembly rendered from `index.circuit.tsx`
-- [ ] T012 [US1] Run `tsci check placement` for connector zoning and board outline changes in `src/circuits/one-door-controller.tsx`
+- [x] T009 [P] [US1] Run `npm run typecheck` against `index.circuit.tsx`, `src/circuits/one-door-controller.tsx`, `src/components/ethernet-poe-front-end.tsx`, `src/components/power-domains.tsx`, and `src/components/relay-lock-output.tsx`
+- [x] T010 [P] [US1] Run `tsci check netlist` for the board defined by `index.circuit.tsx` and `src/circuits/one-door-controller.tsx`
+- [x] T011 [US1] Run `tsci build` and `tsci snapshot` for the P1 assembly rendered from `index.circuit.tsx`
+- [x] T012 [US1] Run `tsci check placement` for connector zoning and board outline changes in `src/circuits/one-door-controller.tsx`
 
 ### Implementation for User Story 1
 
-- [ ] T013 [P] [US1] Implement PoE logic rails, external lock-power entry, and named power nets in `src/components/power-domains.tsx`
-- [ ] T014 [P] [US1] Implement the 10/100 Ethernet + PoE front end with protection and logic-domain assumptions in `src/components/ethernet-poe-front-end.tsx`
-- [ ] T015 [P] [US1] Implement the dry Form-C relay lock path with 12V/24V compatibility and fail-safe/fail-secure wiring annotations in `src/components/relay-lock-output.tsx`
-- [ ] T016 [P] [US1] Implement the minimum supervised door-contact and REX paths needed for one-door control in `src/components/supervised-input-bank.tsx`
-- [ ] T017 [US1] Integrate the power, Ethernet, relay, door-contact, and REX subcircuits into the board assembly in `src/circuits/one-door-controller.tsx`
-- [ ] T018 [US1] Document the P1 review package, commanded lock path, and remaining credential-path assumptions in `specs/001-door-access-controller/quickstart.md`
+- [x] T013 [P] [US1] Implement PoE logic rails, external lock-power entry, and named power nets in `src/components/power-domains.tsx`
+- [x] T014 [P] [US1] Implement the 10/100 Ethernet + PoE front end with protection and logic-domain assumptions in `src/components/ethernet-poe-front-end.tsx`
+- [x] T015 [P] [US1] Implement the dry Form-C relay lock path with 12V/24V compatibility and fail-safe/fail-secure wiring annotations in `src/components/relay-lock-output.tsx`
+- [x] T016 [P] [US1] Implement the minimum supervised door-contact and REX paths needed for one-door control in `src/components/supervised-input-bank.tsx`
+- [x] T017 [US1] Integrate the power, Ethernet, relay, door-contact, and REX subcircuits into the board assembly in `src/circuits/one-door-controller.tsx`
+- [x] T018 [US1] Document the P1 review package, commanded lock path, and remaining credential-path assumptions in `specs/001-door-access-controller/quickstart.md`
 
 **Checkpoint**: User Story 1 should be independently demonstrable as the MVP board.
 
@@ -67,18 +67,18 @@
 
 ### Validation for User Story 2 (MANDATORY)
 
-- [ ] T019 [P] [US2] Run `npm run typecheck` against `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts`, and `src/circuits/one-door-controller.tsx`
-- [ ] T020 [P] [US2] Run `tsci check netlist` for the offline-support additions rendered from `index.circuit.tsx`
-- [ ] T021 [US2] Run `tsci build` and `tsci snapshot` to confirm the offline-buffering and management-state additions in `index.circuit.tsx`
-- [ ] T022 [US2] Run `tsci check placement` if RTC, nonvolatile storage, or service-access placement changes are introduced in `src/circuits/one-door-controller.tsx`
+- [x] T019 [P] [US2] Run `npm run typecheck` against `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts`, and `src/circuits/one-door-controller.tsx`
+- [x] T020 [P] [US2] Run `tsci check netlist` for the offline-support additions rendered from `index.circuit.tsx`
+- [x] T021 [US2] Run `tsci build` and `tsci snapshot` to confirm the offline-buffering and management-state additions in `index.circuit.tsx`
+- [x] T022 [US2] Run `tsci check placement` if RTC, nonvolatile storage, or service-access placement changes are introduced in `src/circuits/one-door-controller.tsx`
 
 ### Implementation for User Story 2
 
-- [ ] T023 [P] [US2] Extend event, management, and timekeeping domain types for offline buffering and resynchronization in `src/lib/controller-types.ts`
-- [ ] T024 [P] [US2] Define nonvolatile storage, RTC-backed ordering, and power-fail signaling interfaces in `src/lib/wiring-contracts.ts`
-- [ ] T025 [P] [US2] Add the board-level storage, RTC, and degraded/offline management annotations to `src/circuits/one-door-controller.tsx`
-- [ ] T026 [US2] Update the behavioral handoff and outage assumptions in `specs/001-door-access-controller/contracts/operational-behavior-contract.md`
-- [ ] T027 [US2] Update the implementation handoff for offline buffering, RTC ordering, and resync expectations in `specs/001-door-access-controller/quickstart.md`
+- [x] T023 [P] [US2] Extend event, management, and timekeeping domain types for offline buffering and resynchronization in `src/lib/controller-types.ts`
+- [x] T024 [P] [US2] Define nonvolatile storage, RTC-backed ordering, and power-fail signaling interfaces in `src/lib/wiring-contracts.ts`
+- [x] T025 [P] [US2] Add the board-level storage, RTC, and degraded/offline management annotations to `src/circuits/one-door-controller.tsx`
+- [x] T026 [US2] Update the behavioral handoff and outage assumptions in `specs/001-door-access-controller/contracts/operational-behavior-contract.md`
+- [x] T027 [US2] Update the implementation handoff for offline buffering, RTC ordering, and resync expectations in `specs/001-door-access-controller/quickstart.md`
 
 **Checkpoint**: User Story 2 should independently describe and render offline-capable behavior for the controller.
 
@@ -92,18 +92,18 @@
 
 ### Validation for User Story 3 (MANDATORY)
 
-- [ ] T028 [P] [US3] Run `npm run typecheck` against `src/components/reader-interfaces.tsx`, `src/components/supervised-input-bank.tsx`, `src/components/relay-lock-output.tsx`, and `src/circuits/one-door-controller.tsx`
-- [ ] T029 [P] [US3] Run `tsci check netlist` for the installer-facing interfaces rendered from `index.circuit.tsx`
-- [ ] T030 [US3] Run `tsci build` and `tsci snapshot` to capture the complete field-wiring interfaces in `index.circuit.tsx`
-- [ ] T031 [US3] Run `tsci check placement` for reader-port, terminal-block, relay, and protection-zone placement in `src/circuits/one-door-controller.tsx`
+- [x] T028 [P] [US3] Run `npm run typecheck` against `src/components/reader-interfaces.tsx`, `src/components/supervised-input-bank.tsx`, `src/components/relay-lock-output.tsx`, and `src/circuits/one-door-controller.tsx`
+- [x] T029 [P] [US3] Run `tsci check netlist` for the installer-facing interfaces rendered from `index.circuit.tsx`
+- [x] T030 [US3] Run `tsci build` and `tsci snapshot` to capture the complete field-wiring interfaces in `index.circuit.tsx`
+- [x] T031 [US3] Run `tsci check placement` for reader-port, terminal-block, relay, and protection-zone placement in `src/circuits/one-door-controller.tsx`
 
 ### Implementation for User Story 3
 
-- [ ] T032 [P] [US3] Implement the OSDP/RS-485 and Wiegand reader sections with protection and compatibility labeling in `src/components/reader-interfaces.tsx`
-- [ ] T033 [P] [US3] Expand monitored inputs for tamper and abnormal-power sensing in `src/components/supervised-input-bank.tsx`
-- [ ] T034 [P] [US3] Refine the relay output with installer-facing suppression and contact-rating annotations in `src/components/relay-lock-output.tsx`
-- [ ] T035 [US3] Integrate the complete installer-facing reader and supervised-input hardware into `src/circuits/one-door-controller.tsx`
-- [ ] T036 [US3] Update field-wiring expectations, supervision modes, and service-access notes in `specs/001-door-access-controller/contracts/hardware-interface-contract.md`
+- [x] T032 [P] [US3] Implement the OSDP/RS-485 and Wiegand reader sections with protection and compatibility labeling in `src/components/reader-interfaces.tsx`
+- [x] T033 [P] [US3] Expand monitored inputs for tamper and abnormal-power sensing in `src/components/supervised-input-bank.tsx`
+- [x] T034 [P] [US3] Refine the relay output with installer-facing suppression and contact-rating annotations in `src/components/relay-lock-output.tsx`
+- [x] T035 [US3] Integrate the complete installer-facing reader and supervised-input hardware into `src/circuits/one-door-controller.tsx`
+- [x] T036 [US3] Update field-wiring expectations, supervision modes, and service-access notes in `specs/001-door-access-controller/contracts/hardware-interface-contract.md`
 
 **Checkpoint**: User Story 3 should independently cover standard one-door field-hardware integration.
 
@@ -117,18 +117,18 @@
 
 ### Validation for User Story 4 (MANDATORY)
 
-- [ ] T037 [P] [US4] Run `npm run typecheck` against `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts`, `src/components/ethernet-poe-front-end.tsx`, and `src/circuits/one-door-controller.tsx`
-- [ ] T038 [P] [US4] Run `tsci check netlist` for the managed-administration additions rendered from `index.circuit.tsx`
-- [ ] T039 [US4] Run `tsci build` and `tsci snapshot` to verify service-access and management-state visibility in `index.circuit.tsx`
-- [ ] T040 [US4] Run `tsci check placement` if service/debug connectors or status indicators are added to `src/circuits/one-door-controller.tsx`
+- [x] T037 [P] [US4] Run `npm run typecheck` against `src/lib/controller-types.ts`, `src/lib/wiring-contracts.ts`, `src/components/ethernet-poe-front-end.tsx`, and `src/circuits/one-door-controller.tsx`
+- [x] T038 [P] [US4] Run `tsci check netlist` for the managed-administration additions rendered from `index.circuit.tsx`
+- [x] T039 [US4] Run `tsci build` and `tsci snapshot` to verify service-access and management-state visibility in `index.circuit.tsx`
+- [x] T040 [US4] Run `tsci check placement` if service/debug connectors or status indicators are added to `src/circuits/one-door-controller.tsx`
 
 ### Implementation for User Story 4
 
-- [ ] T041 [P] [US4] Extend management-link and configuration/status interface types in `src/lib/controller-types.ts`
-- [ ] T042 [P] [US4] Add service/debug access and management-interface net definitions in `src/lib/wiring-contracts.ts`
-- [ ] T043 [P] [US4] Add management-status, service-access, and monitoring-resync annotations in `src/components/ethernet-poe-front-end.tsx`
-- [ ] T044 [US4] Integrate the managed-administration interfaces and review-visible status paths in `src/circuits/one-door-controller.tsx`
-- [ ] T045 [US4] Update central-management behavior and handoff notes in `specs/001-door-access-controller/contracts/operational-behavior-contract.md`
+- [x] T041 [P] [US4] Extend management-link and configuration/status interface types in `src/lib/controller-types.ts`
+- [x] T042 [P] [US4] Add service/debug access and management-interface net definitions in `src/lib/wiring-contracts.ts`
+- [x] T043 [P] [US4] Add management-status, service-access, and monitoring-resync annotations in `src/components/ethernet-poe-front-end.tsx`
+- [x] T044 [US4] Integrate the managed-administration interfaces and review-visible status paths in `src/circuits/one-door-controller.tsx`
+- [x] T045 [US4] Update central-management behavior and handoff notes in `specs/001-door-access-controller/contracts/operational-behavior-contract.md`
 
 **Checkpoint**: User Story 4 should independently describe the managed-administration layer on top of the controller hardware.
 
@@ -138,10 +138,10 @@
 
 **Purpose**: Finalize documentation, fabrication-readiness notes, and full-project validation after all desired stories are complete.
 
-- [ ] T046 [P] Refresh the final board handoff notes, file layout, and validation instructions in `specs/001-door-access-controller/quickstart.md`
-- [ ] T047 Review circuit purity, typing discipline, and unnecessary complexity across `index.circuit.tsx`, `src/circuits/one-door-controller.tsx`, `src/components/*.tsx`, and `src/lib/*.ts`
-- [ ] T048 Validate fabrication-readiness status, provisional parts, and reviewer handoff notes in `specs/001-door-access-controller/plan.md`
-- [ ] T049 Re-run `npm run typecheck`, `tsci check netlist`, `tsci build`, `tsci snapshot`, and `tsci check placement` for the complete feature implemented from `index.circuit.tsx`
+- [x] T046 [P] Refresh the final board handoff notes, file layout, and validation instructions in `specs/001-door-access-controller/quickstart.md`
+- [x] T047 Review circuit purity, typing discipline, and unnecessary complexity across `index.circuit.tsx`, `src/circuits/one-door-controller.tsx`, `src/components/*.tsx`, and `src/lib/*.ts`
+- [x] T048 Validate fabrication-readiness status, provisional parts, and reviewer handoff notes in `specs/001-door-access-controller/plan.md`
+- [x] T049 Re-run `npm run typecheck`, `tsci check netlist`, `tsci build`, `tsci snapshot`, and `tsci check placement` for the complete feature implemented from `index.circuit.tsx`
 
 ---
 
